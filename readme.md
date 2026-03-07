@@ -68,6 +68,20 @@ A game engine written in C.
 - some changes
 
 
+## v0.8.4
+- Internal code improvements and refactoring
+
+### Added
+- SA_GetWindowWidth()
+- SA_GetWindowHeight()
+- SA_GetWindowSize()
+- SA_GetMousePosition()
+- SA_StopPlaying()
+- SA_SetWindowTitle()
+- SA_GetWindowTitle()
+- SA_IsFullScreen()
+
+
 ## Building
 (coming soon)
 

@@ -11,11 +11,14 @@
 
 
 #include "sa_event.h"
+#include "sa_window.h"
 
 #include <string.h>
 #include "sa_.h"
 #include "sa_common.h"
 #include "sa_inc.h"
+#include "sa_renderer.h"
+
 
 
 #define SA_MAX_EVENTS 256
@@ -254,8 +257,16 @@ static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 static void window_resize_callback(GLFWwindow* window, int width, int height)
 {
+    SA_CHECK_WINDOW_I(SA_WindowInst_I, SA_MSG_WINDOW_NOT_FOUND_I, SA_RET_TYPE_NONE_I);
+
+    SA_WindowInst_I->width = width;
+    SA_WindowInst_I->height = height;
+    
+    
     // if using OpenGL, update viewport too
     glViewport(0, 0, width, height);
+
+    SA_SetProjectionOrtho(0.0f, (float)width, (float)height, 0.0f);
 }
 
 

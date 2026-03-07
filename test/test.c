@@ -24,6 +24,7 @@ void MyEventHandler(SA_Window* window, const SA_Event* e)
             printf("User callback: Scroll %.1f\n", e->scroll.offset);
             break;
 
+
         // add whatever you want
     }
 }
@@ -59,6 +60,15 @@ int main(SA_MULTIPLE_ARGS)
     // SA_Event event;
     while (SA_Play())
     {
+        // double MouseX, MouseY;
+        // SA_GetMousePosition(&MouseX, &MouseY);
+        // printf("Mouse: %dx%d\n", MouseX, MouseY);
+        // printf("Mouse: %f %f\n", MouseX, MouseY);
+
+        // SA_Sizei size = SA_GetWindowSize();
+        // printf("Size: %dx%d\n", size.width, size.height);
+
+        printf("Is FullScreen?: %d", SA_IsFullScreen());
 
         float DeltaTime = SA_GetDeltaTime();
 
@@ -71,6 +81,9 @@ int main(SA_MULTIPLE_ARGS)
         if (SA_IsKeyDown(SA_KEY_D) || SA_IsKeyDown(SA_KEY_RIGHT)) vx = +speed;
         if (SA_IsKeyDown(SA_KEY_W) || SA_IsKeyDown(SA_KEY_UP))    vy = -speed;
         if (SA_IsKeyDown(SA_KEY_S) || SA_IsKeyDown(SA_KEY_DOWN))  vy = +speed;
+        if (SA_IsKeyDown(SA_KEY_F)) SA_EnableFullScreen();
+        if (SA_IsKeyDown(SA_KEY_N)) SA_DisableFullScreen();
+        if (SA_IsKeyDown(SA_KEY_ESCAPE)) SA_StopPlaying();
 
 
 

@@ -99,6 +99,8 @@
 
 #define SA_RECT(x, y, width, height)    ((SA_Rect){(x), (y), (width), (height)})
 #define SA_RECTF(x, y, width, height)    ((SA_RectF){(x), (y), (width), (height)})
+#define SA_VEC2(x, y)   ((SA_Vec2){(x), (y)})
+#define SA_VEC2I(x, y)   ((SA_Vec2i){(x), (y)})
 
 
 

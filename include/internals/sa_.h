@@ -27,6 +27,8 @@
 #include "core/sa_types.h"
 
 struct SA_Window {
+    int x;
+    int y;
     int width;
     int height;
 

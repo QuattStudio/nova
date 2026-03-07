@@ -223,6 +223,16 @@ typedef struct SA_Position {
 } SA_Position;
 
 
+typedef SA_Position SA_Pos;
+
+
+typedef struct SA_PositionEx {
+    double x;
+    double y;
+} SA_PositionEx;
+
+typedef SA_PositionEx SA_PosEx;
+
 typedef struct SA_Velocity {
     float x;
     float y;
