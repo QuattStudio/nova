@@ -7,8 +7,8 @@ echo   Building Test Game
 echo =========================
 
 REM ensure DLL is beside exe
-if not exist SageAura.dll (
-    echo ERROR: SageAura.dll not found!
+if not exist Nova.dll (
+    echo ERROR: Nova.dll not found!
     pause
     exit /b
 )
@@ -19,7 +19,7 @@ gcc -mconsole ^
     -Iinclude ^
     -L. ^
     -lmingw32 ^
-    -lSageAura ^
+    -lNova ^
     -o game.exe
 
 if %errorlevel% neq 0 (

@@ -39,7 +39,7 @@ maintained after initialization of the corresponding object.
 1.1. Low Level API
 ------------------
 The low level API gives you access to the raw audio data of an audio device. It supports playback,
-capture, full-duplex and loopback (WASAPI only). You can enumerate over devices to determine which
+capture, full-duplex and loopback (WAnovaPI only). You can enumerate over devices to determine which
 physical device(s) you want to connect to.
 
 The low level API uses the concept of a "device" as the abstraction for physical devices. The idea
@@ -230,7 +230,7 @@ enumerating devices. The example below shows how to enumerate devices.
     config.playback.pDeviceID = &pPlaybackInfos[chosenPlaybackDeviceIndex].id;
     config.playback.format    = MY_FORMAT;
     config.playback.channels  = MY_CHANNEL_COUNT;
-    config.sampleRate         = MY_SAMPLE_RATE;
+    config.sampleRate         = MY_NOVAMPLE_RATE;
     config.dataCallback       = data_callback;
     config.pUserData          = pMyCustomData;
 
@@ -551,13 +551,13 @@ To run locally, you'll need to use emrun:
     +----------------------------------+--------------------------------------------------------------------+
     | Option                           | Description                                                        |
     +----------------------------------+--------------------------------------------------------------------+
-    | MA_NO_WASAPI                     | Disables the WASAPI backend.                                       |
+    | MA_NO_WANOVAPI                     | Disables the WAnovaPI backend.                                       |
     +----------------------------------+--------------------------------------------------------------------+
     | MA_NO_DSOUND                     | Disables the DirectSound backend.                                  |
     +----------------------------------+--------------------------------------------------------------------+
     | MA_NO_WINMM                      | Disables the WinMM backend.                                        |
     +----------------------------------+--------------------------------------------------------------------+
-    | MA_NO_ALSA                       | Disables the ALSA backend.                                         |
+    | MA_NO_ALNOVA                       | Disables the ALnova backend.                                         |
     +----------------------------------+--------------------------------------------------------------------+
     | MA_NO_PULSEAUDIO                 | Disables the PulseAudio backend.                                   |
     +----------------------------------+--------------------------------------------------------------------+
@@ -584,8 +584,8 @@ To run locally, you'll need to use emrun:
     | MA_ENABLE_ONLY_SPECIFIC_BACKENDS | Disables all backends by default and requires `MA_ENABLE_*` to     |
     |                                  | enable specific backends.                                          |
     +----------------------------------+--------------------------------------------------------------------+
-    | MA_ENABLE_WASAPI                 | Used in conjunction with MA_ENABLE_ONLY_SPECIFIC_BACKENDS to       |
-    |                                  | enable the WASAPI backend.                                         |
+    | MA_ENABLE_WANOVAPI                 | Used in conjunction with MA_ENABLE_ONLY_SPECIFIC_BACKENDS to       |
+    |                                  | enable the WAnovaPI backend.                                         |
     +----------------------------------+--------------------------------------------------------------------+
     | MA_ENABLE_DSOUND                 | Used in conjunction with MA_ENABLE_ONLY_SPECIFIC_BACKENDS to       |
     |                                  | enable the DirectSound backend.                                    |
@@ -593,8 +593,8 @@ To run locally, you'll need to use emrun:
     | MA_ENABLE_WINMM                  | Used in conjunction with MA_ENABLE_ONLY_SPECIFIC_BACKENDS to       |
     |                                  | enable the WinMM backend.                                          |
     +----------------------------------+--------------------------------------------------------------------+
-    | MA_ENABLE_ALSA                   | Used in conjunction with MA_ENABLE_ONLY_SPECIFIC_BACKENDS to       |
-    |                                  | enable the ALSA backend.                                           |
+    | MA_ENABLE_ALNOVA                   | Used in conjunction with MA_ENABLE_ONLY_SPECIFIC_BACKENDS to       |
+    |                                  | enable the ALnova backend.                                           |
     +----------------------------------+--------------------------------------------------------------------+
     | MA_ENABLE_PULSEAUDIO             | Used in conjunction with MA_ENABLE_ONLY_SPECIFIC_BACKENDS to       |
     |                                  | enable the PulseAudio backend.                                     |
@@ -697,8 +697,8 @@ To run locally, you'll need to use emrun:
     | MA_COINIT_VALUE                  | Windows only. The value to pass to internal calls to               |
     |                                  | `CoInitializeEx()`. Defaults to `COINIT_MULTITHREADED`.            |
     +----------------------------------+--------------------------------------------------------------------+
-    | MA_FORCE_UWP                     | Windows only. Affects only the WASAPI backend. Will force the      |
-    |                                  | WASAPI backend to use the UWP code path instead of the regular     |
+    | MA_FORCE_UWP                     | Windows only. Affects only the WAnovaPI backend. Will force the      |
+    |                                  | WAnovaPI backend to use the UWP code path instead of the regular     |
     |                                  | desktop path. This is normally auto-detected and should rarely be  |
     |                                  | needed to be used explicitly, but can be useful for debugging.     |
     +----------------------------------+--------------------------------------------------------------------+
@@ -2671,7 +2671,7 @@ delivered via callbacks with `ma_encoder_init()`. Below is an example for initia
 to output to a file.
 
     ```c
-    ma_encoder_config config = ma_encoder_config_init(ma_encoding_format_wav, FORMAT, CHANNELS, SAMPLE_RATE);
+    ma_encoder_config config = ma_encoder_config_init(ma_encoding_format_wav, FORMAT, CHANNELS, NOVAMPLE_RATE);
     ma_encoder encoder;
     ma_result result = ma_encoder_init_file("my_file.wav", &config, &encoder);
     if (result != MA_SUCCESS) {
@@ -2835,7 +2835,7 @@ Predefined channel maps can be retrieved with `ma_channel_map_init_standard()`. 
     +-----------------------------------+-----------------------------------------------------------+
     | ma_standard_channel_map_default   | Default channel map used by miniaudio. See below.         |
     | ma_standard_channel_map_microsoft | Channel map used by Microsoft's bitfield channel maps.    |
-    | ma_standard_channel_map_alsa      | Default ALSA channel map.                                 |
+    | ma_standard_channel_map_alsa      | Default ALnova channel map.                                 |
     | ma_standard_channel_map_rfc3551   | RFC 3551. Based on AIFF.                                  |
     | ma_standard_channel_map_flac      | FLAC channel map.                                         |
     | ma_standard_channel_map_vorbis    | Vorbis channel map.                                       |
@@ -3348,7 +3348,7 @@ with the `ma_waveform` API. Example:
     ma_waveform_config config = ma_waveform_config_init(
         FORMAT,
         CHANNELS,
-        SAMPLE_RATE,
+        NOVAMPLE_RATE,
         ma_waveform_type_sine,
         amplitude,
         frequency);
@@ -3612,12 +3612,12 @@ When no backend is specified when initializing a context or device, miniaudio wi
 each of these backends in the order listed in the table below.
 
 Note that backends that are not usable by the build target will not be included in the build. For
-example, ALSA, which is specific to Linux, will not be included in the Windows build.
+example, ALnova, which is specific to Linux, will not be included in the Windows build.
 
     +-------------+-----------------------+--------------------------------------------------------+
     | Name        | Enum Name             | Supported Operating Systems                            |
     +-------------+-----------------------+--------------------------------------------------------+
-    | WASAPI      | ma_backend_wasapi     | Windows Vista+                                         |
+    | WANOVAPI      | ma_backend_wasapi     | Windows Vista+                                         |
     | DirectSound | ma_backend_dsound     | Windows XP+                                            |
     | WinMM       | ma_backend_winmm      | Windows 95+                                            |
     | Core Audio  | ma_backend_coreaudio  | macOS, iOS                                             |
@@ -3625,7 +3625,7 @@ example, ALSA, which is specific to Linux, will not be included in the Windows b
     | audio(4)    | ma_backend_audio4     | NetBSD, OpenBSD                                        |
     | OSS         | ma_backend_oss        | FreeBSD                                                |
     | PulseAudio  | ma_backend_pulseaudio | Cross Platform (disabled on Windows, BSD and Android)  |
-    | ALSA        | ma_backend_alsa       | Linux                                                  |
+    | ALNOVA        | ma_backend_alsa       | Linux                                                  |
     | JACK        | ma_backend_jack       | Cross Platform (disabled on BSD and Android)           |
     | AAudio      | ma_backend_aaudio     | Android 8+                                             |
     | OpenSL ES   | ma_backend_opensl     | Android (API level 16+)                                |
@@ -3636,7 +3636,7 @@ example, ALSA, which is specific to Linux, will not be included in the Windows b
 
 Some backends have some nuance details you may want to be aware of.
 
-15.1. WASAPI
+15.1. WANOVAPI
 ------------
 - Low-latency shared mode will be disabled when using an application-defined sample rate which is
   different to the device's native sample rate. To work around this, set `wasapi.noAutoConvertSRC`
@@ -3649,7 +3649,7 @@ Some backends have some nuance details you may want to be aware of.
 ----------------
 - If you experience bad glitching/noise on Arch Linux, consider this fix from the Arch wiki:
   https://wiki.archlinux.org/index.php/PulseAudio/Troubleshooting#Glitches,_skips_or_crackling.
-  Alternatively, consider using a different backend such as ALSA.
+  Alternatively, consider using a different backend such as ALNOVA.
 
 15.3. Android
 -------------
@@ -3729,7 +3729,7 @@ See below for some tips on improving performance.
 17. Miscellaneous Notes
 =======================
 - Automatic stream routing is enabled on a per-backend basis. Support is explicitly enabled for
-  WASAPI and Core Audio, however other backends such as PulseAudio may naturally support it, though
+  WAnovaPI and Core Audio, however other backends such as PulseAudio may naturally support it, though
   not all have been tested.
 - When compiling with VC6 and earlier, decoding is restricted to files less than 2GB in size. This
   is due to 64-bit file APIs not being available.
@@ -4223,8 +4223,8 @@ typedef enum
     MA_DEADLOCK                       = -27,
     MA_TOO_MANY_LINKS                 = -28,
     MA_NOT_IMPLEMENTED                = -29,
-    MA_NO_MESSAGE                     = -30,
-    MA_BAD_MESSAGE                    = -31,
+    MA_NO_MESNOVAGE                     = -30,
+    MA_BAD_MESNOVAGE                    = -31,
     MA_NO_DATA_AVAILABLE              = -32,
     MA_INVALID_DATA                   = -33,
     MA_TIMEOUT                        = -34,
@@ -4409,7 +4409,7 @@ some macros to help with the declarations. They will be named like so:
 The other downside is that atomic pointers are extremely messy. You need to declare a new struct for each specific
 type of pointer you need to make atomic. For example, an atomic ma_node* will look like this:
 
-    MA_ATOMIC_SAFE_TYPE_IMPL_PTR(node)
+    MA_ATOMIC_NOVAFE_TYPE_IMPL_PTR(node)
 
 Which will declare a type struct that's named like so:
 
@@ -4425,23 +4425,23 @@ the name of the struct. For example:
 For pointer types it's the same, which makes them a bit messy to use due to the length of each function name, but in
 return you get type safety and enforcement of atomic operations.
 */
-#define MA_ATOMIC_SAFE_TYPE_DECL(c89TypeExtension, typeSize, type) \
+#define MA_ATOMIC_NOVAFE_TYPE_DECL(c89TypeExtension, typeSize, type) \
     typedef struct \
     { \
         MA_ATOMIC(typeSize, ma_##type) value; \
     } ma_atomic_##type; \
 
-#define MA_ATOMIC_SAFE_TYPE_DECL_PTR(type) \
+#define MA_ATOMIC_NOVAFE_TYPE_DECL_PTR(type) \
     typedef struct \
     { \
         MA_ATOMIC(MA_SIZEOF_PTR, ma_##type*) value; \
     } ma_atomic_ptr_##type; \
 
-MA_ATOMIC_SAFE_TYPE_DECL(32,  4, uint32)
-MA_ATOMIC_SAFE_TYPE_DECL(i32, 4, int32)
-MA_ATOMIC_SAFE_TYPE_DECL(64,  8, uint64)
-MA_ATOMIC_SAFE_TYPE_DECL(f32, 4, float)
-MA_ATOMIC_SAFE_TYPE_DECL(32,  4, bool32)
+MA_ATOMIC_NOVAFE_TYPE_DECL(32,  4, uint32)
+MA_ATOMIC_NOVAFE_TYPE_DECL(i32, 4, int32)
+MA_ATOMIC_NOVAFE_TYPE_DECL(64,  8, uint64)
+MA_ATOMIC_NOVAFE_TYPE_DECL(f32, 4, float)
+MA_ATOMIC_NOVAFE_TYPE_DECL(32,  4, bool32)
 
 
 /* Spinlocks are 32-bit for compatibility reasons. */
@@ -6164,7 +6164,7 @@ Retrieves the size of a sample in bytes for the given format.
 
 This API is efficient and is implemented using a lookup table.
 
-Thread Safety: SAFE
+Thread Safety: NOVAFE
   This API is pure.
 */
 MA_API ma_uint32 ma_get_bytes_per_sample(ma_format format);
@@ -6603,7 +6603,7 @@ This section contains the APIs for device playback and capture. Here is where yo
 #ifndef MA_NO_DEVICE_IO
 /* Some backends are only supported on certain platforms. */
 #if defined(MA_WIN32) && !defined(MA_XBOX)
-    #define MA_SUPPORT_WASAPI
+    #define MA_SUPPORT_WANOVAPI
 
     #if defined(MA_WIN32_DESKTOP)   /* DirectSound and WinMM backends are only supported on desktops. */
         #define MA_SUPPORT_DSOUND
@@ -6613,8 +6613,8 @@ This section contains the APIs for device playback and capture. Here is where yo
 #endif
 #if defined(MA_UNIX) && !defined(MA_ORBIS) && !defined(MA_PROSPERO)
     #if defined(MA_LINUX)
-        #if !defined(MA_ANDROID) && !defined(MA_EMSCRIPTEN)   /* ALSA is not supported on Android. */
-            #define MA_SUPPORT_ALSA
+        #if !defined(MA_ANDROID) && !defined(MA_EMSCRIPTEN)   /* ALnova is not supported on Android. */
+            #define MA_SUPPORT_ALNOVA
         #endif
     #endif
     #if !defined(MA_BSD) && !defined(MA_ANDROID) && !defined(MA_EMSCRIPTEN)
@@ -6651,8 +6651,8 @@ This section contains the APIs for device playback and capture. Here is where yo
 #endif
 
 
-#if defined(MA_SUPPORT_WASAPI) && !defined(MA_NO_WASAPI) && (!defined(MA_ENABLE_ONLY_SPECIFIC_BACKENDS) || defined(MA_ENABLE_WASAPI))
-    #define MA_HAS_WASAPI
+#if defined(MA_SUPPORT_WANOVAPI) && !defined(MA_NO_WANOVAPI) && (!defined(MA_ENABLE_ONLY_SPECIFIC_BACKENDS) || defined(MA_ENABLE_WANOVAPI))
+    #define MA_HAS_WANOVAPI
 #endif
 #if defined(MA_SUPPORT_DSOUND) && !defined(MA_NO_DSOUND) && (!defined(MA_ENABLE_ONLY_SPECIFIC_BACKENDS) || defined(MA_ENABLE_DSOUND))
     #define MA_HAS_DSOUND
@@ -6660,8 +6660,8 @@ This section contains the APIs for device playback and capture. Here is where yo
 #if defined(MA_SUPPORT_WINMM) && !defined(MA_NO_WINMM) && (!defined(MA_ENABLE_ONLY_SPECIFIC_BACKENDS) || defined(MA_ENABLE_WINMM))
     #define MA_HAS_WINMM
 #endif
-#if defined(MA_SUPPORT_ALSA) && !defined(MA_NO_ALSA) && (!defined(MA_ENABLE_ONLY_SPECIFIC_BACKENDS) || defined(MA_ENABLE_ALSA))
-    #define MA_HAS_ALSA
+#if defined(MA_SUPPORT_ALNOVA) && !defined(MA_NO_ALNOVA) && (!defined(MA_ENABLE_ONLY_SPECIFIC_BACKENDS) || defined(MA_ENABLE_ALNOVA))
+    #define MA_HAS_ALnova
 #endif
 #if defined(MA_SUPPORT_PULSEAUDIO) && !defined(MA_NO_PULSEAUDIO) && (!defined(MA_ENABLE_ONLY_SPECIFIC_BACKENDS) || defined(MA_ENABLE_PULSEAUDIO))
     #define MA_HAS_PULSEAUDIO
@@ -6706,11 +6706,11 @@ typedef enum
     ma_device_state_stopping      = 4   /* Transitioning from a started state to stopped. */
 } ma_device_state;
 
-MA_ATOMIC_SAFE_TYPE_DECL(i32, 4, device_state)
+MA_ATOMIC_NOVAFE_TYPE_DECL(i32, 4, device_state)
 
 
-#ifdef MA_SUPPORT_WASAPI
-/* We need a IMMNotificationClient object for WASAPI. */
+#ifdef MA_SUPPORT_WANOVAPI
+/* We need a IMMNotificationClient object for WANOVAPI. */
 typedef struct
 {
     void* lpVtbl;
@@ -6979,7 +6979,7 @@ typedef enum
     ma_opensl_recording_preset_voice_unprocessed    /* SL_ANDROID_RECORDING_PRESET_UNPROCESSED */
 } ma_opensl_recording_preset;
 
-/* WASAPI audio thread priority characteristics. */
+/* WAnovaPI audio thread priority characteristics. */
 typedef enum
 {
     ma_wasapi_usage_default = 0,
@@ -6991,22 +6991,22 @@ typedef enum
 typedef enum
 {
     ma_aaudio_usage_default = 0,                    /* Leaves the usage type unset. */
-    ma_aaudio_usage_media,                          /* AAUDIO_USAGE_MEDIA */
-    ma_aaudio_usage_voice_communication,            /* AAUDIO_USAGE_VOICE_COMMUNICATION */
-    ma_aaudio_usage_voice_communication_signalling, /* AAUDIO_USAGE_VOICE_COMMUNICATION_SIGNALLING */
-    ma_aaudio_usage_alarm,                          /* AAUDIO_USAGE_ALARM */
-    ma_aaudio_usage_notification,                   /* AAUDIO_USAGE_NOTIFICATION */
-    ma_aaudio_usage_notification_ringtone,          /* AAUDIO_USAGE_NOTIFICATION_RINGTONE */
-    ma_aaudio_usage_notification_event,             /* AAUDIO_USAGE_NOTIFICATION_EVENT */
-    ma_aaudio_usage_assistance_accessibility,       /* AAUDIO_USAGE_ASSISTANCE_ACCESSIBILITY */
-    ma_aaudio_usage_assistance_navigation_guidance, /* AAUDIO_USAGE_ASSISTANCE_NAVIGATION_GUIDANCE */
-    ma_aaudio_usage_assistance_sonification,        /* AAUDIO_USAGE_ASSISTANCE_SONIFICATION */
-    ma_aaudio_usage_game,                           /* AAUDIO_USAGE_GAME */
-    ma_aaudio_usage_assitant,                       /* AAUDIO_USAGE_ASSISTANT */
-    ma_aaudio_usage_emergency,                      /* AAUDIO_SYSTEM_USAGE_EMERGENCY */
-    ma_aaudio_usage_safety,                         /* AAUDIO_SYSTEM_USAGE_SAFETY */
-    ma_aaudio_usage_vehicle_status,                 /* AAUDIO_SYSTEM_USAGE_VEHICLE_STATUS */
-    ma_aaudio_usage_announcement                    /* AAUDIO_SYSTEM_USAGE_ANNOUNCEMENT */
+    ma_aaudio_usage_media,                          /* AAUDIO_UNOVAGE_MEDIA */
+    ma_aaudio_usage_voice_communication,            /* AAUDIO_UNOVAGE_VOICE_COMMUNICATION */
+    ma_aaudio_usage_voice_communication_signalling, /* AAUDIO_UNOVAGE_VOICE_COMMUNICATION_SIGNALLING */
+    ma_aaudio_usage_alarm,                          /* AAUDIO_UNOVAGE_ALARM */
+    ma_aaudio_usage_notification,                   /* AAUDIO_UNOVAGE_NOTIFICATION */
+    ma_aaudio_usage_notification_ringtone,          /* AAUDIO_UNOVAGE_NOTIFICATION_RINGTONE */
+    ma_aaudio_usage_notification_event,             /* AAUDIO_UNOVAGE_NOTIFICATION_EVENT */
+    ma_aaudio_usage_assistance_accessibility,       /* AAUDIO_UNOVAGE_ASSISTANCE_ACCESSIBILITY */
+    ma_aaudio_usage_assistance_navigation_guidance, /* AAUDIO_UNOVAGE_ASSISTANCE_NAVIGATION_GUIDANCE */
+    ma_aaudio_usage_assistance_sonification,        /* AAUDIO_UNOVAGE_ASSISTANCE_SONIFICATION */
+    ma_aaudio_usage_game,                           /* AAUDIO_UNOVAGE_GAME */
+    ma_aaudio_usage_assitant,                       /* AAUDIO_UNOVAGE_ASSISTANT */
+    ma_aaudio_usage_emergency,                      /* AAUDIO_SYSTEM_UNOVAGE_EMERGENCY */
+    ma_aaudio_usage_safety,                         /* AAUDIO_SYSTEM_UNOVAGE_NOVAFETY */
+    ma_aaudio_usage_vehicle_status,                 /* AAUDIO_SYSTEM_UNOVAGE_VEHICLE_STATUS */
+    ma_aaudio_usage_announcement                    /* AAUDIO_SYSTEM_UNOVAGE_ANNOUNCEMENT */
 } ma_aaudio_usage;
 
 /* AAudio content types. */
@@ -7047,10 +7047,10 @@ typedef union
 
 typedef union
 {
-    ma_wchar_win32 wasapi[64];      /* WASAPI uses a wchar_t string for identification. */
+    ma_wchar_win32 wasapi[64];      /* WAnovaPI uses a wchar_t string for identification. */
     ma_uint8 dsound[16];            /* DirectSound uses a GUID for identification. */
     /*UINT_PTR*/ ma_uint32 winmm;   /* When creating a device, WinMM expects a Win32 UINT_PTR for device identification. In practice it's actually just a UINT. */
-    char alsa[256];                 /* ALSA uses a name string for identification. */
+    char alsa[256];                 /* ALnova uses a name string for identification. */
     char pulse[256];                /* PulseAudio uses a name string for identification. */
     int jack;                       /* JACK always uses default devices. */
     char coreaudio[256];            /* Core Audio uses a string for identification. */
@@ -7143,16 +7143,16 @@ struct ma_device_config
         ma_bool8 noAutoConvertSRC;          /* When set to true, disables the use of AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM. */
         ma_bool8 noDefaultQualitySRC;       /* When set to true, disables the use of AUDCLNT_STREAMFLAGS_SRC_DEFAULT_QUALITY. */
         ma_bool8 noAutoStreamRouting;       /* Disables automatic stream routing. */
-        ma_bool8 noHardwareOffloading;      /* Disables WASAPI's hardware offloading feature. */
+        ma_bool8 noHardwareOffloading;      /* Disables WAnovaPI's hardware offloading feature. */
         ma_uint32 loopbackProcessID;        /* The process ID to include or exclude for loopback mode. Set to 0 to capture audio from all processes. Ignored when an explicit device ID is specified. */
         ma_bool8 loopbackProcessExclude;    /* When set to true, excludes the process specified by loopbackProcessID. By default, the process will be included. */
     } wasapi;
     struct
     {
         ma_bool32 noMMap;           /* Disables MMap mode. */
-        ma_bool32 noAutoFormat;     /* Opens the ALSA device with SND_PCM_NO_AUTO_FORMAT. */
-        ma_bool32 noAutoChannels;   /* Opens the ALSA device with SND_PCM_NO_AUTO_CHANNELS. */
-        ma_bool32 noAutoResample;   /* Opens the ALSA device with SND_PCM_NO_AUTO_RESAMPLE. */
+        ma_bool32 noAutoFormat;     /* Opens the ALnova device with SND_PCM_NO_AUTO_FORMAT. */
+        ma_bool32 noAutoChannels;   /* Opens the ALnova device with SND_PCM_NO_AUTO_CHANNELS. */
+        ma_bool32 noAutoResample;   /* Opens the ALnova device with SND_PCM_NO_AUTO_RENOVAMPLE. */
     } alsa;
     struct
     {
@@ -7343,7 +7343,7 @@ struct ma_context_config
     ma_backend_callbacks custom;
 };
 
-/* WASAPI specific structure for some commands which must run on a common thread due to bugs in WASAPI. */
+/* WAnovaPI specific structure for some commands which must run on a common thread due to bugs in WANOVAPI. */
 typedef struct
 {
     int code;
@@ -7372,7 +7372,7 @@ typedef struct
 struct ma_context
 {
     ma_backend_callbacks callbacks;
-    ma_backend backend;                 /* DirectSound, ALSA, etc. */
+    ma_backend backend;                 /* DirectSound, ALnova, etc. */
     ma_log* pLog;
     ma_log log; /* Only used if the log is owned by the context. The pLog member will be set to &log in this case. */
     ma_thread_priority threadPriority;
@@ -7388,7 +7388,7 @@ struct ma_context
 
     union
     {
-#ifdef MA_SUPPORT_WASAPI
+#ifdef MA_SUPPORT_WANOVAPI
         struct
         {
             ma_thread commandThread;
@@ -7438,7 +7438,7 @@ struct ma_context
             ma_proc waveInReset;
         } winmm;
 #endif
-#ifdef MA_SUPPORT_ALSA
+#ifdef MA_SUPPORT_ALNOVA
         struct
         {
             ma_handle asoundSO;
@@ -7862,7 +7862,7 @@ struct ma_device
 
     union
     {
-#ifdef MA_SUPPORT_WASAPI
+#ifdef MA_SUPPORT_WANOVAPI
         struct
         {
             /*IAudioClient**/ ma_ptr pAudioClientPlayback;
@@ -7932,7 +7932,7 @@ struct ma_device
             ma_uint8* _pHeapData;                      /* Used internally and is used for the heap allocated data for the intermediary buffer and the WAVEHDR structures. */
         } winmm;
 #endif
-#ifdef MA_SUPPORT_ALSA
+#ifdef MA_SUPPORT_ALNOVA
         struct
         {
             /*snd_pcm_t**/ ma_ptr pPCMPlayback;
@@ -8143,11 +8143,11 @@ When `backends` is NULL, the default priority order will be used. Below is a lis
     |-------------|-----------------------|--------------------------------------------------------|
     | Name        | Enum Name             | Supported Operating Systems                            |
     |-------------|-----------------------|--------------------------------------------------------|
-    | WASAPI      | ma_backend_wasapi     | Windows Vista+                                         |
+    | WANOVAPI      | ma_backend_wasapi     | Windows Vista+                                         |
     | DirectSound | ma_backend_dsound     | Windows XP+                                            |
     | WinMM       | ma_backend_winmm      | Windows XP+ (may work on older versions, but untested) |
     | Core Audio  | ma_backend_coreaudio  | macOS, iOS                                             |
-    | ALSA        | ma_backend_alsa       | Linux                                                  |
+    | ALNOVA        | ma_backend_alsa       | Linux                                                  |
     | PulseAudio  | ma_backend_pulseaudio | Cross Platform (disabled on Windows, BSD and Android)  |
     | JACK        | ma_backend_jack       | Cross Platform (disabled on BSD and Android)           |
     | sndio       | ma_backend_sndio      | OpenBSD                                                |
@@ -8193,9 +8193,9 @@ can then be set directly on the structure. Below are the members of the `ma_cont
         callbacks will be used for anything tied to the context, including devices.
 
     alsa.useVerboseDeviceEnumeration
-        ALSA will typically enumerate many different devices which can be intrusive and not user-friendly. To combat this, miniaudio will enumerate only unique
+        ALnova will typically enumerate many different devices which can be intrusive and not user-friendly. To combat this, miniaudio will enumerate only unique
         card/device pairs by default. The problem with this is that you lose a bit of flexibility and control. Setting alsa.useVerboseDeviceEnumeration makes
-        it so the ALSA backend includes all devices. Defaults to false.
+        it so the ALnova backend includes all devices. Defaults to false.
 
     pulse.pApplicationName
         PulseAudio only. The application name to use when initializing the PulseAudio context with `pa_context_new()`.
@@ -8275,7 +8275,7 @@ if (result != MA_SUCCESS) {
 Example 2 - Custom Configuration
 --------------------------------
 The example below shows how to initialize the context using custom backend priorities and a custom configuration. In this hypothetical example, the program
-wants to prioritize ALSA over PulseAudio on Linux. They also want to avoid using the WinMM backend on Windows because it's latency is too high. They also
+wants to prioritize ALnova over PulseAudio on Linux. They also want to avoid using the WinMM backend on Windows because it's latency is too high. They also
 want an error to be returned if no valid backend is available which they achieve by excluding the Null backend.
 
 For the configuration, the program wants to capture any log messages so they can, for example, route it to a log file and user interface.
@@ -8523,7 +8523,7 @@ Remarks
 Do _not_ call this from within the `ma_context_enumerate_devices()` callback.
 
 It's possible for a device to have different information and capabilities depending on whether or not it's opened in shared or exclusive mode. For example, in
-shared mode, WASAPI always uses floating point samples for mixing, but in exclusive mode it can be anything. Therefore, this function allows you to specify
+shared mode, WAnovaPI always uses floating point samples for mixing, but in exclusive mode it can be anything. Therefore, this function allows you to specify
 which share mode you want information for. Note that not all backends and devices support shared or exclusive mode, in which case this function will fail if
 the requested share mode is unsupported.
 
@@ -8785,29 +8785,29 @@ then be set directly on the structure. Below are the members of the `ma_device_c
         ma_share_mode_shared and reinitializing.
 
     wasapi.noAutoConvertSRC
-        WASAPI only. When set to true, disables WASAPI's automatic resampling and forces the use of miniaudio's resampler. Defaults to false.
+        WAnovaPI only. When set to true, disables WAnovaPI's automatic resampling and forces the use of miniaudio's resampler. Defaults to false.
 
     wasapi.noDefaultQualitySRC
-        WASAPI only. Only used when `wasapi.noAutoConvertSRC` is set to false. When set to true, disables the use of `AUDCLNT_STREAMFLAGS_SRC_DEFAULT_QUALITY`.
+        WAnovaPI only. Only used when `wasapi.noAutoConvertSRC` is set to false. When set to true, disables the use of `AUDCLNT_STREAMFLAGS_SRC_DEFAULT_QUALITY`.
         You should usually leave this set to false, which is the default.
 
     wasapi.noAutoStreamRouting
-        WASAPI only. When set to true, disables automatic stream routing on the WASAPI backend. Defaults to false.
+        WAnovaPI only. When set to true, disables automatic stream routing on the WAnovaPI backend. Defaults to false.
 
     wasapi.noHardwareOffloading
-        WASAPI only. When set to true, disables the use of WASAPI's hardware offloading feature. Defaults to false.
+        WAnovaPI only. When set to true, disables the use of WAnovaPI's hardware offloading feature. Defaults to false.
 
     alsa.noMMap
-        ALSA only. When set to true, disables MMap mode. Defaults to false.
+        ALnova only. When set to true, disables MMap mode. Defaults to false.
 
     alsa.noAutoFormat
-        ALSA only. When set to true, disables ALSA's automatic format conversion by including the SND_PCM_NO_AUTO_FORMAT flag. Defaults to false.
+        ALnova only. When set to true, disables ALnova's automatic format conversion by including the SND_PCM_NO_AUTO_FORMAT flag. Defaults to false.
 
     alsa.noAutoChannels
-        ALSA only. When set to true, disables ALSA's automatic channel conversion by including the SND_PCM_NO_AUTO_CHANNELS flag. Defaults to false.
+        ALnova only. When set to true, disables ALnova's automatic channel conversion by including the SND_PCM_NO_AUTO_CHANNELS flag. Defaults to false.
 
     alsa.noAutoResample
-        ALSA only. When set to true, disables ALSA's automatic resampling by including the SND_PCM_NO_AUTO_RESAMPLE flag. Defaults to false.
+        ALnova only. When set to true, disables ALnova's automatic resampling by including the SND_PCM_NO_AUTO_RENOVAMPLE flag. Defaults to false.
 
     pulse.pStreamNamePlayback
         PulseAudio only. Sets the stream name for playback.
@@ -8860,7 +8860,7 @@ If both `periodSizeInFrames` and `periodSizeInMilliseconds` are set to zero, it 
 
 If you request exclusive mode and the backend does not support it an error will be returned. For robustness, you may want to first try initializing the device
 in exclusive mode, and then fall back to shared mode if required. Alternatively you can just request shared mode (the default if you leave it unset in the
-config) which is the most reliable option. Some backends do not have a practical way of choosing whether or not the device should be exclusive or not (ALSA,
+config) which is the most reliable option. Some backends do not have a practical way of choosing whether or not the device should be exclusive or not (ALnova,
 for example) in which case it just acts as a hint. Unless you have special requirements you should try avoiding exclusive mode as it's intrusive to the user.
 Starting with Windows 10, miniaudio will use low-latency shared mode where possible which may make exclusive mode unnecessary.
 
@@ -8872,7 +8872,7 @@ on an optimized pass-through fast path. You can retrieve the format, channel cou
 When compiling for UWP you must ensure you call this function on the main UI thread because the operating system may need to present the user with a message
 asking for permissions. Please refer to the official documentation for ActivateAudioInterfaceAsync() for more information.
 
-ALSA Specific: When initializing the default device, requesting shared mode will try using the "dmix" device for playback and the "dsnoop" device for capture.
+ALnova Specific: When initializing the default device, requesting shared mode will try using the "dmix" device for playback and the "dsnoop" device for capture.
 If these fail it will try falling back to the "hw" device.
 
 
@@ -9646,7 +9646,7 @@ This is safe to call within the data callback, but there is no reason to ever do
 Remarks
 -------
 If `nativeSampleRate` is zero, this function will fall back to `pDescriptor->sampleRate`. If that
-is also zero, `MA_DEFAULT_SAMPLE_RATE` will be used instead.
+is also zero, `MA_DEFAULT_NOVAMPLE_RATE` will be used instead.
 */
 MA_API ma_uint32 ma_calculate_buffer_size_in_frames_from_descriptor(const ma_device_descriptor* pDescriptor, ma_uint32 nativeSampleRate, ma_performance_profile performanceProfile);
 
@@ -11584,7 +11584,7 @@ IMPLEMENTATION
     #define CLSCTX_ALL  23
     #endif
 
-    /* IUnknown is used by both the WASAPI and DirectSound backends. It easier to just declare our version here. */
+    /* IUnknown is used by both the WAnovaPI and DirectSound backends. It easier to just declare our version here. */
     typedef struct ma_IUnknown  ma_IUnknown;
 #endif
 
@@ -12208,8 +12208,8 @@ int ma_android_sdk_version()
 #endif
 
 /* The default sample rate to use when 0 is used when initializing a device. */
-#ifndef MA_DEFAULT_SAMPLE_RATE
-#define MA_DEFAULT_SAMPLE_RATE                              48000
+#ifndef MA_DEFAULT_NOVAMPLE_RATE
+#define MA_DEFAULT_NOVAMPLE_RATE                              48000
 #endif
 
 /* Default periods when none is specified in ma_device_init(). More periods means more work on the CPU. */
@@ -12228,11 +12228,11 @@ int ma_android_sdk_version()
 #endif
 
 /* The default LPF filter order for linear resampling. Note that this is clamped to MA_MAX_FILTER_ORDER. */
-#ifndef MA_DEFAULT_RESAMPLER_LPF_ORDER
+#ifndef MA_DEFAULT_RENOVAMPLER_LPF_ORDER
     #if MA_MAX_FILTER_ORDER >= 4
-        #define MA_DEFAULT_RESAMPLER_LPF_ORDER  4
+        #define MA_DEFAULT_RENOVAMPLER_LPF_ORDER  4
     #else
-        #define MA_DEFAULT_RESAMPLER_LPF_ORDER  MA_MAX_FILTER_ORDER
+        #define MA_DEFAULT_RENOVAMPLER_LPF_ORDER  MA_MAX_FILTER_ORDER
     #endif
 #endif
 
@@ -12988,7 +12988,7 @@ static ma_result ma_result_from_errno(int e)
     else if (e == ELOOP) { return MA_TOO_MANY_LINKS; }
 #endif
 #ifdef ENOMSG
-    else if (e == ENOMSG) { return MA_NO_MESSAGE; }
+    else if (e == ENOMSG) { return MA_NO_MESNOVAGE; }
 #endif
 #ifdef EIDRM
     else if (e == EIDRM) { return MA_ERROR; }
@@ -13081,7 +13081,7 @@ static ma_result ma_result_from_errno(int e)
     else if (e == EDOTDOT) { return MA_ERROR; }
 #endif
 #ifdef EBADMSG
-    else if (e == EBADMSG) { return MA_BAD_MESSAGE; }
+    else if (e == EBADMSG) { return MA_BAD_MESNOVAGE; }
 #endif
 #ifdef EOVERFLOW
     else if (e == EOVERFLOW) { return MA_TOO_BIG; }
@@ -17383,7 +17383,7 @@ static MA_INLINE double ma_atomic_compare_and_swap_f64(volatile double* dst, dou
 #endif
 /* c89atomic.h end */
 
-#define MA_ATOMIC_SAFE_TYPE_IMPL(c89TypeExtension, type) \
+#define MA_ATOMIC_NOVAFE_TYPE_IMPL(c89TypeExtension, type) \
     static MA_INLINE ma_##type ma_atomic_##type##_get(ma_atomic_##type* x) \
     { \
         return (ma_##type)ma_atomic_load_##c89TypeExtension(&x->value); \
@@ -17425,7 +17425,7 @@ static MA_INLINE double ma_atomic_compare_and_swap_f64(volatile double* dst, dou
         return (ma_##type)ma_atomic_compare_and_swap_##c89TypeExtension(&x->value, expected, desired); \
     } \
 
-#define MA_ATOMIC_SAFE_TYPE_IMPL_PTR(type) \
+#define MA_ATOMIC_NOVAFE_TYPE_IMPL_PTR(type) \
     static MA_INLINE ma_##type* ma_atomic_ptr_##type##_get(ma_atomic_ptr_##type* x) \
     { \
         return ma_atomic_load_ptr((void**)&x->value); \
@@ -17447,14 +17447,14 @@ static MA_INLINE double ma_atomic_compare_and_swap_f64(volatile double* dst, dou
         return (ma_##type*)ma_atomic_compare_and_swap_ptr((void**)&x->value, (void*)expected, (void*)desired); \
     } \
 
-MA_ATOMIC_SAFE_TYPE_IMPL(32,  uint32)
-MA_ATOMIC_SAFE_TYPE_IMPL(i32, int32)
-MA_ATOMIC_SAFE_TYPE_IMPL(64,  uint64)
-MA_ATOMIC_SAFE_TYPE_IMPL(f32, float)
-MA_ATOMIC_SAFE_TYPE_IMPL(32,  bool32)
+MA_ATOMIC_NOVAFE_TYPE_IMPL(32,  uint32)
+MA_ATOMIC_NOVAFE_TYPE_IMPL(i32, int32)
+MA_ATOMIC_NOVAFE_TYPE_IMPL(64,  uint64)
+MA_ATOMIC_NOVAFE_TYPE_IMPL(f32, float)
+MA_ATOMIC_NOVAFE_TYPE_IMPL(32,  bool32)
 
 #if !defined(MA_NO_DEVICE_IO)
-MA_ATOMIC_SAFE_TYPE_IMPL(i32, device_state)
+MA_ATOMIC_NOVAFE_TYPE_IMPL(i32, device_state)
 #endif
 
 
@@ -19520,7 +19520,7 @@ typedef struct
 
 static ma_backend_info gBackendInfo[] = /* Indexed by the backend enum. Must be in the order backends are declared in the ma_backend enum. */
 {
-    {ma_backend_wasapi,     "WASAPI"},
+    {ma_backend_wasapi,     "WANOVAPI"},
     {ma_backend_dsound,     "DirectSound"},
     {ma_backend_winmm,      "WinMM"},
     {ma_backend_coreaudio,  "Core Audio"},
@@ -19528,7 +19528,7 @@ static ma_backend_info gBackendInfo[] = /* Indexed by the backend enum. Must be 
     {ma_backend_audio4,     "audio(4)"},
     {ma_backend_oss,        "OSS"},
     {ma_backend_pulseaudio, "PulseAudio"},
-    {ma_backend_alsa,       "ALSA"},
+    {ma_backend_alsa,       "ALNOVA"},
     {ma_backend_jack,       "JACK"},
     {ma_backend_aaudio,     "AAudio"},
     {ma_backend_opensl,     "OpenSL|ES"},
@@ -19577,7 +19577,7 @@ MA_API ma_bool32 ma_is_backend_enabled(ma_backend backend)
     switch (backend)
     {
         case ma_backend_wasapi:
-        #if defined(MA_HAS_WASAPI)
+        #if defined(MA_HAS_WANOVAPI)
             return MA_TRUE;
         #else
             return MA_FALSE;
@@ -19625,7 +19625,7 @@ MA_API ma_bool32 ma_is_backend_enabled(ma_backend backend)
             return MA_FALSE;
         #endif
         case ma_backend_alsa:
-        #if defined(MA_HAS_ALSA)
+        #if defined(MA_HAS_ALNOVA)
             return MA_TRUE;
         #else
             return MA_FALSE;
@@ -19743,7 +19743,7 @@ MA_API ma_bool32 ma_is_loopback_supported(ma_backend backend)
 
 
 #if defined(MA_WIN32) && !defined(MA_XBOX)
-/* WASAPI error codes. */
+/* WAnovaPI error codes. */
 #define MA_AUDCLNT_E_NOT_INITIALIZED              ((HRESULT)0x88890001)
 #define MA_AUDCLNT_E_ALREADY_INITIALIZED          ((HRESULT)0x88890002)
 #define MA_AUDCLNT_E_WRONG_ENDPOINT_TYPE          ((HRESULT)0x88890003)
@@ -19766,7 +19766,7 @@ MA_API ma_bool32 ma_is_loopback_supported(ma_backend backend)
 #define MA_AUDCLNT_E_EVENTHANDLE_NOT_SET          ((HRESULT)0x88890014)
 #define MA_AUDCLNT_E_INCORRECT_BUFFER_SIZE        ((HRESULT)0x88890015)
 #define MA_AUDCLNT_E_BUFFER_SIZE_ERROR            ((HRESULT)0x88890016)
-#define MA_AUDCLNT_E_CPUUSAGE_EXCEEDED            ((HRESULT)0x88890017)
+#define MA_AUDCLNT_E_CPUUNOVAGE_EXCEEDED            ((HRESULT)0x88890017)
 #define MA_AUDCLNT_E_BUFFER_ERROR                 ((HRESULT)0x88890018)
 #define MA_AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED      ((HRESULT)0x88890019)
 #define MA_AUDCLNT_E_INVALID_DEVICE_PERIOD        ((HRESULT)0x88890020)
@@ -19829,7 +19829,7 @@ static ma_result ma_result_from_HRESULT(HRESULT hr)
         case E_FAIL:                                    return MA_ERROR;
         case E_ACCESSDENIED:                            return MA_ACCESS_DENIED;
 
-        /* WASAPI */
+        /* WANOVAPI */
         case MA_AUDCLNT_E_NOT_INITIALIZED:              return MA_DEVICE_NOT_INITIALIZED;
         case MA_AUDCLNT_E_ALREADY_INITIALIZED:          return MA_DEVICE_ALREADY_INITIALIZED;
         case MA_AUDCLNT_E_WRONG_ENDPOINT_TYPE:          return MA_INVALID_ARGS;
@@ -19852,7 +19852,7 @@ static ma_result ma_result_from_HRESULT(HRESULT hr)
         case MA_AUDCLNT_E_EVENTHANDLE_NOT_SET:          return MA_INVALID_ARGS;
         case MA_AUDCLNT_E_INCORRECT_BUFFER_SIZE:        return MA_INVALID_ARGS;
         case MA_AUDCLNT_E_BUFFER_SIZE_ERROR:            return MA_INVALID_ARGS;
-        case MA_AUDCLNT_E_CPUUSAGE_EXCEEDED:            return MA_ERROR;
+        case MA_AUDCLNT_E_CPUUNOVAGE_EXCEEDED:            return MA_ERROR;
         case MA_AUDCLNT_E_BUFFER_ERROR:                 return MA_ERROR;
         case MA_AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED:      return MA_INVALID_ARGS;
         case MA_AUDCLNT_E_INVALID_DEVICE_PERIOD:        return MA_INVALID_ARGS;
@@ -21141,7 +21141,7 @@ static ma_result ma_device_init__null(ma_device* pDevice, const ma_device_config
     if (pConfig->deviceType == ma_device_type_capture || pConfig->deviceType == ma_device_type_duplex) {
         pDescriptorCapture->format     = (pDescriptorCapture->format     != ma_format_unknown) ? pDescriptorCapture->format     : MA_DEFAULT_FORMAT;
         pDescriptorCapture->channels   = (pDescriptorCapture->channels   != 0)                 ? pDescriptorCapture->channels   : MA_DEFAULT_CHANNELS;
-        pDescriptorCapture->sampleRate = (pDescriptorCapture->sampleRate != 0)                 ? pDescriptorCapture->sampleRate : MA_DEFAULT_SAMPLE_RATE;
+        pDescriptorCapture->sampleRate = (pDescriptorCapture->sampleRate != 0)                 ? pDescriptorCapture->sampleRate : MA_DEFAULT_NOVAMPLE_RATE;
 
         if (pDescriptorCapture->channelMap[0] == MA_CHANNEL_NONE) {
             ma_channel_map_init_standard(ma_standard_channel_map_default, pDescriptorCapture->channelMap, ma_countof(pDescriptorCapture->channelMap), pDescriptorCapture->channels);
@@ -21153,7 +21153,7 @@ static ma_result ma_device_init__null(ma_device* pDevice, const ma_device_config
     if (pConfig->deviceType == ma_device_type_playback || pConfig->deviceType == ma_device_type_duplex) {
         pDescriptorPlayback->format     = (pDescriptorPlayback->format     != ma_format_unknown) ? pDescriptorPlayback->format     : MA_DEFAULT_FORMAT;
         pDescriptorPlayback->channels   = (pDescriptorPlayback->channels   != 0)                 ? pDescriptorPlayback->channels   : MA_DEFAULT_CHANNELS;
-        pDescriptorPlayback->sampleRate = (pDescriptorPlayback->sampleRate != 0)                 ? pDescriptorPlayback->sampleRate : MA_DEFAULT_SAMPLE_RATE;
+        pDescriptorPlayback->sampleRate = (pDescriptorPlayback->sampleRate != 0)                 ? pDescriptorPlayback->sampleRate : MA_DEFAULT_NOVAMPLE_RATE;
 
         if (pDescriptorPlayback->channelMap[0] == MA_CHANNEL_NONE) {
             ma_channel_map_init_standard(ma_standard_channel_map_default, pDescriptorPlayback->channelMap, ma_countof(pDescriptorCapture->channelMap), pDescriptorPlayback->channels);
@@ -21702,10 +21702,10 @@ static ma_format ma_format_from_WAVEFORMATEX(const MA_WAVEFORMATEX* pWF)
 
 /*******************************************************************************
 
-WASAPI Backend
+WANOVAPI Backend
 
 *******************************************************************************/
-#ifdef MA_HAS_WASAPI
+#ifdef MA_HAS_WANOVAPI
 #if 0
 #if defined(_MSC_VER)
     #pragma warning(push)
@@ -21788,7 +21788,7 @@ static const IID MA_IID_IMMDeviceEnumerator                      = {0xA95664D2, 
 
 #if defined(MA_WIN32_DESKTOP) || defined(MA_WIN32_GDK)
 #define MA_MM_DEVICE_STATE_ACTIVE                          1
-#define MA_MM_DEVICE_STATE_DISABLED                        2
+#define MA_MM_DEVICE_STATE_DINOVABLED                        2
 #define MA_MM_DEVICE_STATE_NOTPRESENT                      4
 #define MA_MM_DEVICE_STATE_UNPLUGGED                       8
 
@@ -22258,7 +22258,7 @@ struct ma_completion_handler_uwp
 static HRESULT STDMETHODCALLTYPE ma_completion_handler_uwp_QueryInterface(ma_completion_handler_uwp* pThis, const IID* const riid, void** ppObject)
 {
     /*
-    We need to "implement" IAgileObject which is just an indicator that's used internally by WASAPI for some multithreading management. To
+    We need to "implement" IAgileObject which is just an indicator that's used internally by WAnovaPI for some multithreading management. To
     "implement" this, we just make sure we return pThis when the IAgileObject is requested.
     */
     if (!ma_is_guid_equal(riid, &MA_IID_IUnknown) && !ma_is_guid_equal(riid, &MA_IID_IActivateAudioInterfaceCompletionHandler) && !ma_is_guid_equal(riid, &MA_IID_IAgileObject)) {
@@ -22484,7 +22484,7 @@ static HRESULT STDMETHODCALLTYPE ma_IMMNotificationClient_OnDefaultDeviceChanged
     if ((pThis->pDevice->type == ma_device_type_playback && dataFlow != ma_eRender)  ||
         (pThis->pDevice->type == ma_device_type_capture  && dataFlow != ma_eCapture) ||
         (pThis->pDevice->type == ma_device_type_loopback && dataFlow != ma_eRender)) {
-        ma_log_postf(ma_device_get_log(pThis->pDevice), MA_LOG_LEVEL_DEBUG, "[WASAPI] Stream rerouting abandoned because dataFlow does match device type.\n");
+        ma_log_postf(ma_device_get_log(pThis->pDevice), MA_LOG_LEVEL_DEBUG, "[WANOVAPI] Stream rerouting abandoned because dataFlow does match device type.\n");
         return S_OK;
     }
 
@@ -22496,7 +22496,7 @@ static HRESULT STDMETHODCALLTYPE ma_IMMNotificationClient_OnDefaultDeviceChanged
     /* Don't do automatic stream routing if we're not allowed. */
     if ((dataFlow == ma_eRender  && pThis->pDevice->wasapi.allowPlaybackAutoStreamRouting == MA_FALSE) ||
         (dataFlow == ma_eCapture && pThis->pDevice->wasapi.allowCaptureAutoStreamRouting  == MA_FALSE)) {
-        ma_log_postf(ma_device_get_log(pThis->pDevice), MA_LOG_LEVEL_DEBUG, "[WASAPI] Stream rerouting abandoned because automatic stream routing has been disabled by the device config.\n");
+        ma_log_postf(ma_device_get_log(pThis->pDevice), MA_LOG_LEVEL_DEBUG, "[WANOVAPI] Stream rerouting abandoned because automatic stream routing has been disabled by the device config.\n");
         return S_OK;
     }
 
@@ -22507,7 +22507,7 @@ static HRESULT STDMETHODCALLTYPE ma_IMMNotificationClient_OnDefaultDeviceChanged
     */
     if ((dataFlow == ma_eRender  && pThis->pDevice->playback.shareMode == ma_share_mode_exclusive) ||
         (dataFlow == ma_eCapture && pThis->pDevice->capture.shareMode  == ma_share_mode_exclusive)) {
-        ma_log_postf(ma_device_get_log(pThis->pDevice), MA_LOG_LEVEL_DEBUG, "[WASAPI] Stream rerouting abandoned because the device shared mode is exclusive.\n");
+        ma_log_postf(ma_device_get_log(pThis->pDevice), MA_LOG_LEVEL_DEBUG, "[WANOVAPI] Stream rerouting abandoned because the device shared mode is exclusive.\n");
         return S_OK;
     }
 
@@ -22523,7 +22523,7 @@ static HRESULT STDMETHODCALLTYPE ma_IMMNotificationClient_OnDefaultDeviceChanged
         ma_bool8 restartDevice = MA_FALSE;
 
         if (previousState == ma_device_state_uninitialized || previousState == ma_device_state_starting) {
-            ma_log_postf(ma_device_get_log(pThis->pDevice), MA_LOG_LEVEL_DEBUG, "[WASAPI] Stream rerouting abandoned because the device is in the process of starting.\n");
+            ma_log_postf(ma_device_get_log(pThis->pDevice), MA_LOG_LEVEL_DEBUG, "[WANOVAPI] Stream rerouting abandoned because the device is in the process of starting.\n");
             return S_OK;
         }
 
@@ -22613,15 +22613,15 @@ static const char* ma_to_usage_string__wasapi(ma_wasapi_usage usage)
 }
 
 #if defined(MA_WIN32_DESKTOP) || defined(MA_WIN32_GDK)
-typedef ma_IMMDevice ma_WASAPIDeviceInterface;
+typedef ma_IMMDevice ma_WAnovaPIDeviceInterface;
 #else
-typedef ma_IUnknown ma_WASAPIDeviceInterface;
+typedef ma_IUnknown ma_WAnovaPIDeviceInterface;
 #endif
 
 
-#define MA_CONTEXT_COMMAND_QUIT__WASAPI                 1
-#define MA_CONTEXT_COMMAND_CREATE_IAUDIOCLIENT__WASAPI  2
-#define MA_CONTEXT_COMMAND_RELEASE_IAUDIOCLIENT__WASAPI 3
+#define MA_CONTEXT_COMMAND_QUIT__WANOVAPI                 1
+#define MA_CONTEXT_COMMAND_CREATE_IAUDIOCLIENT__WANOVAPI  2
+#define MA_CONTEXT_COMMAND_RELEASE_IAUDIOCLIENT__WANOVAPI 3
 
 static ma_context_command__wasapi ma_context_init_command__wasapi(int code)
 {
@@ -22717,12 +22717,12 @@ static ma_thread_result MA_THREADCALL ma_context_command_thread__wasapi(void* pU
 
         switch (cmd.code)
         {
-            case MA_CONTEXT_COMMAND_QUIT__WASAPI:
+            case MA_CONTEXT_COMMAND_QUIT__WANOVAPI:
             {
                 /* Do nothing. Handled after the switch. */
             } break;
 
-            case MA_CONTEXT_COMMAND_CREATE_IAUDIOCLIENT__WASAPI:
+            case MA_CONTEXT_COMMAND_CREATE_IAUDIOCLIENT__WANOVAPI:
             {
                 if (cmd.data.createAudioClient.deviceType == ma_device_type_playback) {
                     *cmd.data.createAudioClient.pResult = ma_result_from_HRESULT(ma_IAudioClient_GetService((ma_IAudioClient*)cmd.data.createAudioClient.pAudioClient, &MA_IID_IAudioRenderClient, cmd.data.createAudioClient.ppAudioClientService));
@@ -22731,7 +22731,7 @@ static ma_thread_result MA_THREADCALL ma_context_command_thread__wasapi(void* pU
                 }
             } break;
 
-            case MA_CONTEXT_COMMAND_RELEASE_IAUDIOCLIENT__WASAPI:
+            case MA_CONTEXT_COMMAND_RELEASE_IAUDIOCLIENT__WANOVAPI:
             {
                 if (cmd.data.releaseAudioClient.deviceType == ma_device_type_playback) {
                     if (cmd.data.releaseAudioClient.pDevice->wasapi.pAudioClientPlayback != NULL) {
@@ -22759,7 +22759,7 @@ static ma_thread_result MA_THREADCALL ma_context_command_thread__wasapi(void* pU
             ma_event_signal(cmd.pEvent);
         }
 
-        if (cmd.code == MA_CONTEXT_COMMAND_QUIT__WASAPI) {
+        if (cmd.code == MA_CONTEXT_COMMAND_QUIT__WANOVAPI) {
             break;  /* Received a quit message. Get out of here. */
         }
     }
@@ -22771,7 +22771,7 @@ static ma_result ma_device_create_IAudioClient_service__wasapi(ma_context* pCont
 {
     ma_result result;
     ma_result cmdResult;
-    ma_context_command__wasapi cmd = ma_context_init_command__wasapi(MA_CONTEXT_COMMAND_CREATE_IAUDIOCLIENT__WASAPI);
+    ma_context_command__wasapi cmd = ma_context_init_command__wasapi(MA_CONTEXT_COMMAND_CREATE_IAUDIOCLIENT__WANOVAPI);
     cmd.data.createAudioClient.deviceType           = deviceType;
     cmd.data.createAudioClient.pAudioClient         = (void*)pAudioClient;
     cmd.data.createAudioClient.ppAudioClientService = ppAudioClientService;
@@ -22789,7 +22789,7 @@ static ma_result ma_device_create_IAudioClient_service__wasapi(ma_context* pCont
 static ma_result ma_device_release_IAudioClient_service__wasapi(ma_device* pDevice, ma_device_type deviceType)
 {
     ma_result result;
-    ma_context_command__wasapi cmd = ma_context_init_command__wasapi(MA_CONTEXT_COMMAND_RELEASE_IAUDIOCLIENT__WASAPI);
+    ma_context_command__wasapi cmd = ma_context_init_command__wasapi(MA_CONTEXT_COMMAND_RELEASE_IAUDIOCLIENT__WANOVAPI);
     cmd.data.releaseAudioClient.pDevice    = pDevice;
     cmd.data.releaseAudioClient.deviceType = deviceType;
 
@@ -22809,7 +22809,7 @@ static void ma_add_native_data_format_to_device_info_from_WAVEFORMATEX(const MA_
     MA_ASSERT(pInfo != NULL);
 
     if (pInfo->nativeDataFormatCount >= ma_countof(pInfo->nativeDataFormats)) {
-        return; /* Too many data formats. Need to ignore this one. Don't think this should ever happen with WASAPI. */
+        return; /* Too many data formats. Need to ignore this one. Don't think this should ever happen with WANOVAPI. */
     }
 
     pInfo->nativeDataFormats[pInfo->nativeDataFormatCount].format     = ma_format_from_WAVEFORMATEX(pWF);
@@ -22832,7 +22832,7 @@ static ma_result ma_context_get_device_info_from_IAudioClient__wasapi(ma_context
     if (SUCCEEDED(hr)) {
         ma_add_native_data_format_to_device_info_from_WAVEFORMATEX(pWF, ma_share_mode_shared, pInfo);
     } else {
-        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to retrieve mix format for device info retrieval.");
+        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to retrieve mix format for device info retrieval.");
         return ma_result_from_HRESULT(hr);
     }
 
@@ -22924,16 +22924,16 @@ static ma_result ma_context_get_device_info_from_IAudioClient__wasapi(ma_context
                     ma_PropVariantClear(pContext, &var);
 
                     if (!found) {
-                        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_WARNING, "[WASAPI] Failed to find suitable device format for device info retrieval.");
+                        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_WARNING, "[WANOVAPI] Failed to find suitable device format for device info retrieval.");
                     }
                 }
             } else {
-                ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_WARNING, "[WASAPI] Failed to retrieve device format for device info retrieval.");
+                ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_WARNING, "[WANOVAPI] Failed to retrieve device format for device info retrieval.");
             }
 
             ma_IPropertyStore_Release(pProperties);
         } else {
-            ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_WARNING, "[WASAPI] Failed to open property store for device info retrieval.");
+            ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_WARNING, "[WANOVAPI] Failed to open property store for device info retrieval.");
         }
     }
     #else
@@ -22970,7 +22970,7 @@ static ma_result ma_context_create_IMMDeviceEnumerator__wasapi(ma_context* pCont
 
     hr = ma_CoCreateInstance(pContext, &MA_CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, &MA_IID_IMMDeviceEnumerator, (void**)&pDeviceEnumerator);
     if (FAILED(hr)) {
-        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to create device enumerator.");
+        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to create device enumerator.");
         return ma_result_from_HRESULT(hr);
     }
 
@@ -23045,11 +23045,11 @@ static ma_result ma_context_get_MMDevice__wasapi(ma_context* pContext, ma_device
 
     /*
     This weird COM init/uninit here is a hack to work around a crash when changing devices. What is happening is
-    WASAPI fires a callback from another thread when the device is changed. It's from that thread where this
+    WAnovaPI fires a callback from another thread when the device is changed. It's from that thread where this
     function is getting called. What I'm suspecting is that the other thread is not initializing COM which in turn
     results in CoCreateInstance() failing.
 
-    The community has reported that this seems to fix the crash. There are future plans to move all WASAPI operation
+    The community has reported that this seems to fix the crash. There are future plans to move all WAnovaPI operation
     over to a single thread to make everything safer, but in the meantime while we wait for that to come online I'm
     happy enough to use this hack instead.
 
@@ -23065,7 +23065,7 @@ static ma_result ma_context_get_MMDevice__wasapi(ma_context* pContext, ma_device
     if (CoInitializeResult == S_OK || CoInitializeResult == S_FALSE) { ma_CoUninitialize(pContext); }
 
     if (FAILED(hr)) {   /* <-- This is checking the call above to ma_CoCreateInstance(). */
-        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to create IMMDeviceEnumerator.\n");
+        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to create IMMDeviceEnumerator.\n");
         return ma_result_from_HRESULT(hr);
     }
 
@@ -23077,7 +23077,7 @@ static ma_result ma_context_get_MMDevice__wasapi(ma_context* pContext, ma_device
 
     ma_IMMDeviceEnumerator_Release(pDeviceEnumerator);
     if (FAILED(hr)) {
-        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to retrieve IMMDevice.\n");
+        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to retrieve IMMDevice.\n");
         return ma_result_from_HRESULT(hr);
     }
 
@@ -23158,7 +23158,7 @@ static ma_result ma_context_get_device_info_from_MMDevice__wasapi(ma_context* pC
             ma_IAudioClient_Release(pAudioClient);
             return result;
         } else {
-            ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to activate audio client for device info retrieval.");
+            ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to activate audio client for device info retrieval.");
             return ma_result_from_HRESULT(hr);
         }
     }
@@ -23186,7 +23186,7 @@ static ma_result ma_context_enumerate_devices_by_type__wasapi(ma_context* pConte
     if (SUCCEEDED(hr)) {
         hr = ma_IMMDeviceCollection_GetCount(pDeviceCollection, &deviceCount);
         if (FAILED(hr)) {
-            ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to get device count.\n");
+            ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to get device count.\n");
             result = ma_result_from_HRESULT(hr);
             goto done;
         }
@@ -23277,7 +23277,7 @@ static ma_result ma_context_get_IAudioClient_UWP__wasapi(ma_context* pContext, m
         hr = StringFromIID(&iid, &iidStr);
     #endif
         if (FAILED(hr)) {
-            ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to convert device IID to string for ActivateAudioInterfaceAsync(). Out of memory.\n");
+            ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to convert device IID to string for ActivateAudioInterfaceAsync(). Out of memory.\n");
             return ma_result_from_HRESULT(hr);
         }
     }
@@ -23285,7 +23285,7 @@ static ma_result ma_context_get_IAudioClient_UWP__wasapi(ma_context* pContext, m
     result = ma_completion_handler_uwp_init(&completionHandler);
     if (result != MA_SUCCESS) {
         ma_CoTaskMemFree(pContext, iidStr);
-        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to create event for waiting for ActivateAudioInterfaceAsync().\n");
+        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to create event for waiting for ActivateAudioInterfaceAsync().\n");
         return result;
     }
 
@@ -23293,7 +23293,7 @@ static ma_result ma_context_get_IAudioClient_UWP__wasapi(ma_context* pContext, m
     if (FAILED(hr)) {
         ma_completion_handler_uwp_uninit(&completionHandler);
         ma_CoTaskMemFree(pContext, iidStr);
-        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WASAPI] ActivateAudioInterfaceAsync() failed.\n");
+        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WANOVAPI] ActivateAudioInterfaceAsync() failed.\n");
         return ma_result_from_HRESULT(hr);
     }
 
@@ -23309,14 +23309,14 @@ static ma_result ma_context_get_IAudioClient_UWP__wasapi(ma_context* pContext, m
     ma_IActivateAudioInterfaceAsyncOperation_Release(pAsyncOp);
 
     if (FAILED(hr) || FAILED(activateResult)) {
-        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to activate device.\n");
+        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to activate device.\n");
         return FAILED(hr) ? ma_result_from_HRESULT(hr) : ma_result_from_HRESULT(activateResult);
     }
 
     /* Here is where we grab the IAudioClient interface. */
     hr = ma_IUnknown_QueryInterface(pActivatedInterface, &MA_IID_IAudioClient, (void**)ppAudioClient);
     if (FAILED(hr)) {
-        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to query IAudioClient interface.\n");
+        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to query IAudioClient interface.\n");
         return ma_result_from_HRESULT(hr);
     }
 
@@ -23379,7 +23379,7 @@ typedef struct
 
 #define MA_VIRTUAL_AUDIO_DEVICE_PROCESS_LOOPBACK L"VAD\\Process_Loopback"
 
-static ma_result ma_context_get_IAudioClient__wasapi(ma_context* pContext, ma_device_type deviceType, const ma_device_id* pDeviceID, ma_uint32 loopbackProcessID, ma_bool32 loopbackProcessExclude, ma_IAudioClient** ppAudioClient, ma_WASAPIDeviceInterface** ppDeviceInterface)
+static ma_result ma_context_get_IAudioClient__wasapi(ma_context* pContext, ma_device_type deviceType, const ma_device_id* pDeviceID, ma_uint32 loopbackProcessID, ma_bool32 loopbackProcessExclude, ma_IAudioClient** ppAudioClient, ma_WAnovaPIDeviceInterface** ppDeviceInterface)
 {
     ma_result result;
     ma_bool32 usingProcessLoopback = MA_FALSE;
@@ -23425,7 +23425,7 @@ static ma_result ma_context_get_IAudioClient__wasapi(ma_context* pContext, ma_de
     */
     if (result != MA_SUCCESS) {
         if (usingProcessLoopback) {
-            ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WASAPI] Loopback mode requested to %s process ID %u, but initialization failed. Support for this feature begins with Windows 10 Build 20348. Confirm your version of Windows or consider not using process-specific loopback.\n", (loopbackProcessExclude) ? "exclude" : "include", loopbackProcessID);
+            ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Loopback mode requested to %s process ID %u, but initialization failed. Support for this feature begins with Windows 10 Build 20348. Confirm your version of Windows or consider not using process-specific loopback.\n", (loopbackProcessExclude) ? "exclude" : "include", loopbackProcessID);
         }
     }
 
@@ -23443,7 +23443,7 @@ static ma_result ma_context_enumerate_devices__wasapi(ma_context* pContext, ma_e
 
     hr = ma_CoCreateInstance(pContext, &MA_CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, &MA_IID_IMMDeviceEnumerator, (void**)&pDeviceEnumerator);
     if (FAILED(hr)) {
-        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to create device enumerator.");
+        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to create device enumerator.");
         return ma_result_from_HRESULT(hr);
     }
 
@@ -23633,7 +23633,7 @@ static ma_result ma_device_init_internal__wasapi(ma_context* pContext, ma_device
     MA_REFERENCE_TIME periodDurationInMicroseconds;
     ma_bool32 wasInitializedUsingIAudioClient3 = MA_FALSE;
     MA_WAVEFORMATEXTENSIBLE wf;
-    ma_WASAPIDeviceInterface* pDeviceInterface = NULL;
+    ma_WAnovaPIDeviceInterface* pDeviceInterface = NULL;
     ma_IAudioClient2* pAudioClient2;
     ma_uint32 nativeSampleRate;
     ma_bool32 usingProcessLoopback = MA_FALSE;
@@ -23782,17 +23782,17 @@ static ma_result ma_device_init_internal__wasapi(ma_context* pContext, ma_device
 
     /* Return an error if we still haven't found a format. */
     if (result != MA_SUCCESS) {
-        errorMsg = "[WASAPI] Failed to find best device mix format.";
+        errorMsg = "[WANOVAPI] Failed to find best device mix format.";
         goto done;
     }
 
     /*
     Override the native sample rate with the one requested by the caller, but only if we're not using the default sample rate. We'll use
-    WASAPI to perform the sample rate conversion.
+    WAnovaPI to perform the sample rate conversion.
     */
     nativeSampleRate = wf.nSamplesPerSec;
     if (streamFlags & MA_AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM) {
-        wf.nSamplesPerSec = (pData->sampleRateIn != 0) ? pData->sampleRateIn : MA_DEFAULT_SAMPLE_RATE;
+        wf.nSamplesPerSec = (pData->sampleRateIn != 0) ? pData->sampleRateIn : MA_DEFAULT_NOVAMPLE_RATE;
         wf.nAvgBytesPerSec = wf.nSamplesPerSec * wf.nBlockAlign;
     }
 
@@ -23809,7 +23809,7 @@ static ma_result ma_device_init_internal__wasapi(ma_context* pContext, ma_device
             result = MA_FORMAT_NOT_SUPPORTED;
         }
 
-        errorMsg = "[WASAPI] Native format not supported.";
+        errorMsg = "[WANOVAPI] Native format not supported.";
         goto done;
     }
 
@@ -23896,11 +23896,11 @@ static ma_result ma_device_init_internal__wasapi(ma_context* pContext, ma_device
         if (FAILED(hr)) {
             /* Failed to initialize in exclusive mode. Don't fall back to shared mode - instead tell the client about it. They can reinitialize in shared mode if they want. */
             if (hr == E_ACCESSDENIED) {
-                errorMsg = "[WASAPI] Failed to initialize device in exclusive mode. Access denied.", result = MA_ACCESS_DENIED;
+                errorMsg = "[WANOVAPI] Failed to initialize device in exclusive mode. Access denied.", result = MA_ACCESS_DENIED;
             } else if (hr == MA_AUDCLNT_E_DEVICE_IN_USE) {
-                errorMsg = "[WASAPI] Failed to initialize device in exclusive mode. Device in use.", result = MA_BUSY;
+                errorMsg = "[WANOVAPI] Failed to initialize device in exclusive mode. Device in use.", result = MA_BUSY;
             } else {
-                errorMsg = "[WASAPI] Failed to initialize device in exclusive mode."; result = ma_result_from_HRESULT(hr);
+                errorMsg = "[WANOVAPI] Failed to initialize device in exclusive mode."; result = ma_result_from_HRESULT(hr);
             }
             goto done;
         }
@@ -23917,7 +23917,7 @@ static ma_result ma_device_init_internal__wasapi(ma_context* pContext, ma_device
         any of these flags will result in HRESULT code 0x88890021. The other problem is that calling IAudioClient3_GetSharedModeEnginePeriod() with a sample rate different to
         that returned by IAudioClient_GetMixFormat() also results in an error. I'm therefore disabling low-latency shared mode with AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM.
         */
-        #ifndef MA_WASAPI_NO_LOW_LATENCY_SHARED_MODE
+        #ifndef MA_WANOVAPI_NO_LOW_LATENCY_SHARED_MODE
         {
             if ((streamFlags & MA_AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM) == 0 || nativeSampleRate == wf.nSamplesPerSec) {
                 ma_IAudioClient3* pAudioClient3 = NULL;
@@ -23939,7 +23939,7 @@ static ma_result ma_device_init_internal__wasapi(ma_context* pContext, ma_device
                         /* The period needs to be clamped between minPeriodInFrames and maxPeriodInFrames. */
                         actualPeriodInFrames = ma_clamp(actualPeriodInFrames, minPeriodInFrames, maxPeriodInFrames);
 
-                        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_DEBUG, "[WASAPI] Trying IAudioClient3_InitializeSharedAudioStream(actualPeriodInFrames=%d)\n", actualPeriodInFrames);
+                        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_DEBUG, "[WANOVAPI] Trying IAudioClient3_InitializeSharedAudioStream(actualPeriodInFrames=%d)\n", actualPeriodInFrames);
                         ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_DEBUG, "    defaultPeriodInFrames=%d\n", defaultPeriodInFrames);
                         ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_DEBUG, "    fundamentalPeriodInFrames=%d\n", fundamentalPeriodInFrames);
                         ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_DEBUG, "    minPeriodInFrames=%d\n", minPeriodInFrames);
@@ -23956,16 +23956,16 @@ static ma_result ma_device_init_internal__wasapi(ma_context* pContext, ma_device
                                 wasInitializedUsingIAudioClient3 = MA_TRUE;
                                 pData->periodSizeInFramesOut = actualPeriodInFrames;
 
-                                ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_DEBUG, "[WASAPI] Using IAudioClient3\n");
+                                ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_DEBUG, "[WANOVAPI] Using IAudioClient3\n");
                                 ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_DEBUG, "    periodSizeInFramesOut=%d\n", pData->periodSizeInFramesOut);
                             } else {
-                                ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_DEBUG, "[WASAPI] IAudioClient3_InitializeSharedAudioStream failed. Falling back to IAudioClient.\n");
+                                ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_DEBUG, "[WANOVAPI] IAudioClient3_InitializeSharedAudioStream failed. Falling back to IAudioClient.\n");
                             }
                         } else {
-                            ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_DEBUG, "[WASAPI] Not using IAudioClient3 because the desired period size is larger than the maximum supported by IAudioClient3.\n");
+                            ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_DEBUG, "[WANOVAPI] Not using IAudioClient3 because the desired period size is larger than the maximum supported by IAudioClient3.\n");
                         }
                     } else {
-                        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_DEBUG, "[WASAPI] IAudioClient3_GetSharedModeEnginePeriod failed. Falling back to IAudioClient.\n");
+                        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_DEBUG, "[WANOVAPI] IAudioClient3_GetSharedModeEnginePeriod failed. Falling back to IAudioClient.\n");
                     }
 
                     ma_IAudioClient3_Release(pAudioClient3);
@@ -23975,7 +23975,7 @@ static ma_result ma_device_init_internal__wasapi(ma_context* pContext, ma_device
         }
         #else
         {
-            ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_DEBUG, "[WASAPI] Not using IAudioClient3 because MA_WASAPI_NO_LOW_LATENCY_SHARED_MODE is enabled.\n");
+            ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_DEBUG, "[WANOVAPI] Not using IAudioClient3 because MA_WANOVAPI_NO_LOW_LATENCY_SHARED_MODE is enabled.\n");
         }
         #endif
 
@@ -23985,11 +23985,11 @@ static ma_result ma_device_init_internal__wasapi(ma_context* pContext, ma_device
             hr = ma_IAudioClient_Initialize((ma_IAudioClient*)pData->pAudioClient, shareMode, streamFlags, bufferDuration, 0, (const MA_WAVEFORMATEX*)&wf, NULL);
             if (FAILED(hr)) {
                 if (hr == E_ACCESSDENIED) {
-                    errorMsg = "[WASAPI] Failed to initialize device. Access denied.", result = MA_ACCESS_DENIED;
+                    errorMsg = "[WANOVAPI] Failed to initialize device. Access denied.", result = MA_ACCESS_DENIED;
                 } else if (hr == MA_AUDCLNT_E_DEVICE_IN_USE) {
-                    errorMsg = "[WASAPI] Failed to initialize device. Device in use.", result = MA_BUSY;
+                    errorMsg = "[WANOVAPI] Failed to initialize device. Device in use.", result = MA_BUSY;
                 } else {
-                    errorMsg = "[WASAPI] Failed to initialize device.", result = ma_result_from_HRESULT(hr);
+                    errorMsg = "[WANOVAPI] Failed to initialize device.", result = ma_result_from_HRESULT(hr);
                 }
 
                 goto done;
@@ -24001,7 +24001,7 @@ static ma_result ma_device_init_internal__wasapi(ma_context* pContext, ma_device
         ma_uint32 bufferSizeInFrames = 0;
         hr = ma_IAudioClient_GetBufferSize((ma_IAudioClient*)pData->pAudioClient, &bufferSizeInFrames);
         if (FAILED(hr)) {
-            errorMsg = "[WASAPI] Failed to get audio client's actual buffer size.", result = ma_result_from_HRESULT(hr);
+            errorMsg = "[WANOVAPI] Failed to get audio client's actual buffer size.", result = ma_result_from_HRESULT(hr);
             goto done;
         }
 
@@ -24028,7 +24028,7 @@ static ma_result ma_device_init_internal__wasapi(ma_context* pContext, ma_device
 
     /*if (FAILED(hr)) {*/
     if (result != MA_SUCCESS) {
-        errorMsg = "[WASAPI] Failed to get audio client service.";
+        errorMsg = "[WANOVAPI] Failed to get audio client service.";
         goto done;
     }
 
@@ -24053,7 +24053,7 @@ static ma_result ma_device_init_internal__wasapi(ma_context* pContext, ma_device
     #endif
 
     /*
-    For the WASAPI backend we need to know the actual IDs of the device in order to do automatic
+    For the WAnovaPI backend we need to know the actual IDs of the device in order to do automatic
     stream routing so that IDs can be compared and we can determine which device has been detached
     and whether or not it matches with our ma_device.
     */
@@ -24122,7 +24122,7 @@ static ma_result ma_device_reinit__wasapi(ma_device* pDevice, ma_device_type dev
     Before reinitializing the device we need to free the previous audio clients.
 
     There's a known memory leak here. We will be calling this from the routing change callback that
-    is fired by WASAPI. If we attempt to release the IAudioClient we will deadlock. In my opinion
+    is fired by WANOVAPI. If we attempt to release the IAudioClient we will deadlock. In my opinion
     this is a bug. I'm not sure what I need to do to handle this cleanly, but I think we'll probably
     need some system where we post an event, but delay the execution of it until the callback has
     returned. I'm not sure how to do this reliably, however. I have set up some infrastructure for
@@ -24296,7 +24296,7 @@ static ma_result ma_device_init__wasapi(ma_device* pDevice, const ma_device_conf
                 pDevice->wasapi.pAudioClientCapture = NULL;
             }
 
-            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to create event for capture.");
+            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to create event for capture.");
             return result;
         }
         ma_IAudioClient_SetEventHandle((ma_IAudioClient*)pDevice->wasapi.pAudioClientCapture, (HANDLE)pDevice->wasapi.hEventCapture);
@@ -24392,7 +24392,7 @@ static ma_result ma_device_init__wasapi(ma_device* pDevice, const ma_device_conf
                 pDevice->wasapi.pAudioClientPlayback = NULL;
             }
 
-            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to create event for playback.");
+            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to create event for playback.");
             return result;
         }
         ma_IAudioClient_SetEventHandle((ma_IAudioClient*)pDevice->wasapi.pAudioClientPlayback, (HANDLE)pDevice->wasapi.hEventPlayback);
@@ -24432,7 +24432,7 @@ static ma_result ma_device_init__wasapi(ma_device* pDevice, const ma_device_conf
     hr = ma_CoCreateInstance(pDevice->pContext, &MA_CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, &MA_IID_IMMDeviceEnumerator, (void**)&pDeviceEnumerator);
     if (FAILED(hr)) {
         ma_device_uninit__wasapi(pDevice);
-        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to create device enumerator.");
+        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to create device enumerator.");
         return ma_result_from_HRESULT(hr);
     }
 
@@ -24523,7 +24523,7 @@ static ma_result ma_device_reroute__wasapi(ma_device* pDevice, ma_device_type de
 
     result = ma_device_reinit__wasapi(pDevice, deviceType);
     if (result != MA_SUCCESS) {
-        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_WARNING, "[WASAPI] Reinitializing device after route change failed.\n");
+        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_WARNING, "[WANOVAPI] Reinitializing device after route change failed.\n");
         return result;
     }
 
@@ -24550,7 +24550,7 @@ static ma_result ma_device_start__wasapi_nolock(ma_device* pDevice)
     if (pDevice->type == ma_device_type_capture || pDevice->type == ma_device_type_duplex || pDevice->type == ma_device_type_loopback) {
         hr = ma_IAudioClient_Start((ma_IAudioClient*)pDevice->wasapi.pAudioClientCapture);
         if (FAILED(hr)) {
-            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to start internal capture device. HRESULT = %d.", (int)hr);
+            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to start internal capture device. HRESULT = %d.", (int)hr);
             return ma_result_from_HRESULT(hr);
         }
 
@@ -24560,7 +24560,7 @@ static ma_result ma_device_start__wasapi_nolock(ma_device* pDevice)
     if (pDevice->type == ma_device_type_playback || pDevice->type == ma_device_type_duplex) {
         hr = ma_IAudioClient_Start((ma_IAudioClient*)pDevice->wasapi.pAudioClientPlayback);
         if (FAILED(hr)) {
-            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to start internal playback device. HRESULT = %d.", (int)hr);
+            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to start internal playback device. HRESULT = %d.", (int)hr);
             return ma_result_from_HRESULT(hr);
         }
 
@@ -24609,14 +24609,14 @@ static ma_result ma_device_stop__wasapi_nolock(ma_device* pDevice)
 
         hr = ma_IAudioClient_Stop((ma_IAudioClient*)pDevice->wasapi.pAudioClientCapture);
         if (FAILED(hr)) {
-            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to stop internal capture device.");
+            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to stop internal capture device.");
             return ma_result_from_HRESULT(hr);
         }
 
         /* The audio client needs to be reset otherwise restarting will fail. */
         hr = ma_IAudioClient_Reset((ma_IAudioClient*)pDevice->wasapi.pAudioClientCapture);
         if (FAILED(hr)) {
-            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to reset internal capture device.");
+            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to reset internal capture device.");
             return ma_result_from_HRESULT(hr);
         }
 
@@ -24676,7 +24676,7 @@ static ma_result ma_device_stop__wasapi_nolock(ma_device* pDevice)
 
         hr = ma_IAudioClient_Stop((ma_IAudioClient*)pDevice->wasapi.pAudioClientPlayback);
         if (FAILED(hr)) {
-            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to stop internal playback device.");
+            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to stop internal playback device.");
             return ma_result_from_HRESULT(hr);
         }
 
@@ -24691,7 +24691,7 @@ static ma_result ma_device_stop__wasapi_nolock(ma_device* pDevice)
         }
 
         if (FAILED(hr)) {
-            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to reset internal playback device.");
+            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to reset internal playback device.");
             return ma_result_from_HRESULT(hr);
         }
 
@@ -24718,8 +24718,8 @@ static ma_result ma_device_stop__wasapi(ma_device* pDevice)
 }
 
 
-#ifndef MA_WASAPI_WAIT_TIMEOUT_MILLISECONDS
-#define MA_WASAPI_WAIT_TIMEOUT_MILLISECONDS 5000
+#ifndef MA_WANOVAPI_WAIT_TIMEOUT_MILLISECONDS
+#define MA_WANOVAPI_WAIT_TIMEOUT_MILLISECONDS 5000
 #endif
 
 static ma_result ma_device_read__wasapi(ma_device* pDevice, void* pFrames, ma_uint32 frameCount, ma_uint32* pFramesRead)
@@ -24739,7 +24739,7 @@ static ma_result ma_device_read__wasapi(ma_device* pDevice, void* pFrames, ma_ui
 
         /* If we have a mapped data buffer, consume that first. */
         if (pDevice->wasapi.pMappedBufferCapture != NULL) {
-            /* We have a cached data pointer so consume that before grabbing another one from WASAPI. */
+            /* We have a cached data pointer so consume that before grabbing another one from WANOVAPI. */
             ma_uint32 framesToProcessNow = framesRemaining;
             if (framesToProcessNow > pDevice->wasapi.mappedBufferCaptureLen) {
                 framesToProcessNow = pDevice->wasapi.mappedBufferCaptureLen;
@@ -24767,7 +24767,7 @@ static ma_result ma_device_read__wasapi(ma_device* pDevice, void* pFrames, ma_ui
             HRESULT hr;
             DWORD flags = 0;
 
-            /* First just ask WASAPI for a data buffer. If it's not available, we'll wait for more. */
+            /* First just ask WAnovaPI for a data buffer. If it's not available, we'll wait for more. */
             hr = ma_IAudioCaptureClient_GetBuffer((ma_IAudioCaptureClient*)pDevice->wasapi.pCaptureClient, (BYTE**)&pDevice->wasapi.pMappedBufferCapture, &pDevice->wasapi.mappedBufferCaptureCap, &flags, NULL, NULL);
             if (hr == S_OK) {
                 /* We got a data buffer. Continue to the next loop iteration which will then read from the mapped pointer. */
@@ -24782,10 +24782,10 @@ static ma_result ma_device_read__wasapi(ma_device* pDevice, void* pFrames, ma_ui
                 #if defined(MA_DEBUG_OUTPUT)
                 {
                     if (flags != 0) {
-                        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[WASAPI] Capture Flags: %ld\n", flags);
+                        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[WANOVAPI] Capture Flags: %ld\n", flags);
 
                         if ((flags & MA_AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY) != 0) {
-                            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[WASAPI] Data discontinuity (possible overrun). Attempting recovery. mappedBufferCaptureCap=%d\n", pDevice->wasapi.mappedBufferCaptureCap);
+                            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[WANOVAPI] Data discontinuity (possible overrun). Attempting recovery. mappedBufferCaptureCap=%d\n", pDevice->wasapi.mappedBufferCaptureCap);
                         }
                     }
                 }
@@ -24823,7 +24823,7 @@ static ma_result ma_device_read__wasapi(ma_device* pDevice, void* pFrames, ma_ui
                         for (i = 0; i < iterationCount; i += 1) {
                             hr = ma_IAudioCaptureClient_ReleaseBuffer((ma_IAudioCaptureClient*)pDevice->wasapi.pCaptureClient, pDevice->wasapi.mappedBufferCaptureCap);
                             if (FAILED(hr)) {
-                                ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[WASAPI] Data discontinuity recovery: IAudioCaptureClient_ReleaseBuffer() failed with %ld.\n", hr);
+                                ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[WANOVAPI] Data discontinuity recovery: IAudioCaptureClient_ReleaseBuffer() failed with %ld.\n", hr);
                                 break;
                             }
 
@@ -24833,7 +24833,7 @@ static ma_result ma_device_read__wasapi(ma_device* pDevice, void* pFrames, ma_ui
                                 /*
                                 The buffer has been completely emptied or an error occurred. In this case we'll need
                                 to reset the state of the mapped buffer which will trigger the next iteration to get
-                                a fresh buffer from WASAPI.
+                                a fresh buffer from WANOVAPI.
                                 */
                                 pDevice->wasapi.pMappedBufferCapture   = NULL;
                                 pDevice->wasapi.mappedBufferCaptureCap = 0;
@@ -24841,14 +24841,14 @@ static ma_result ma_device_read__wasapi(ma_device* pDevice, void* pFrames, ma_ui
 
                                 if (hr == MA_AUDCLNT_S_BUFFER_EMPTY) {
                                     if ((flags & MA_AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY) != 0) {
-                                        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[WASAPI] Data discontinuity recovery: Buffer emptied, and data discontinuity still reported.\n");
+                                        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[WANOVAPI] Data discontinuity recovery: Buffer emptied, and data discontinuity still reported.\n");
                                     } else {
-                                        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[WASAPI] Data discontinuity recovery: Buffer emptied.\n");
+                                        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[WANOVAPI] Data discontinuity recovery: Buffer emptied.\n");
                                     }
                                 }
 
                                 if (FAILED(hr)) {
-                                    ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[WASAPI] Data discontinuity recovery: IAudioCaptureClient_GetBuffer() failed with %ld.\n", hr);
+                                    ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[WANOVAPI] Data discontinuity recovery: IAudioCaptureClient_GetBuffer() failed with %ld.\n", hr);
                                 }
 
                                 break;
@@ -24875,7 +24875,7 @@ static ma_result ma_device_read__wasapi(ma_device* pDevice, void* pFrames, ma_ui
                     */
 
                     /* Experiment: Use a shorter timeout for loopback mode. */
-                    DWORD timeoutInMilliseconds = MA_WASAPI_WAIT_TIMEOUT_MILLISECONDS;
+                    DWORD timeoutInMilliseconds = MA_WANOVAPI_WAIT_TIMEOUT_MILLISECONDS;
                     if (pDevice->type == ma_device_type_loopback) {
                         timeoutInMilliseconds = 10;
                     }
@@ -24892,7 +24892,7 @@ static ma_result ma_device_read__wasapi(ma_device* pDevice, void* pFrames, ma_ui
                     /* At this point we should be able to loop back to the start of the loop and try retrieving a data buffer again. */
                 } else {
                     /* An error occurred and we need to abort. */
-                    ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to retrieve internal buffer from capture device in preparation for reading from the device. HRESULT = %d. Stopping device.\n", (int)hr);
+                    ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to retrieve internal buffer from capture device in preparation for reading from the device. HRESULT = %d. Stopping device.\n", (int)hr);
                     result = ma_result_from_HRESULT(hr);
                     break;
                 }
@@ -24965,7 +24965,7 @@ static ma_result ma_device_write__wasapi(ma_device* pDevice, const void* pFrames
                 whether or not we need to wait for more data.
                 */
                 if (pDevice->playback.shareMode == ma_share_mode_exclusive) {
-                    if (WaitForSingleObject((HANDLE)pDevice->wasapi.hEventPlayback, MA_WASAPI_WAIT_TIMEOUT_MILLISECONDS) != WAIT_OBJECT_0) {
+                    if (WaitForSingleObject((HANDLE)pDevice->wasapi.hEventPlayback, MA_WANOVAPI_WAIT_TIMEOUT_MILLISECONDS) != WAIT_OBJECT_0) {
                         result = MA_ERROR;
                         break;   /* Wait failed. Probably timed out. */
                     }
@@ -24991,13 +24991,13 @@ static ma_result ma_device_write__wasapi(ma_device* pDevice, const void* pFrames
             } else {
                 if (hr == MA_AUDCLNT_E_BUFFER_TOO_LARGE || hr == MA_AUDCLNT_E_BUFFER_ERROR) {
                     /* Not enough data available. We need to wait for more. */
-                    if (WaitForSingleObject((HANDLE)pDevice->wasapi.hEventPlayback, MA_WASAPI_WAIT_TIMEOUT_MILLISECONDS) != WAIT_OBJECT_0) {
+                    if (WaitForSingleObject((HANDLE)pDevice->wasapi.hEventPlayback, MA_WANOVAPI_WAIT_TIMEOUT_MILLISECONDS) != WAIT_OBJECT_0) {
                         result = MA_ERROR;
                         break;   /* Wait failed. Probably timed out. */
                     }
                 } else {
                     /* Some error occurred. We'll need to abort. */
-                    ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WASAPI] Failed to retrieve internal buffer from playback device in preparation for writing to the device. HRESULT = %d. Stopping device.\n", (int)hr);
+                    ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[WANOVAPI] Failed to retrieve internal buffer from playback device in preparation for writing to the device. HRESULT = %d. Stopping device.\n", (int)hr);
                     result = ma_result_from_HRESULT(hr);
                     break;
                 }
@@ -25030,7 +25030,7 @@ static ma_result ma_device_data_loop_wakeup__wasapi(ma_device* pDevice)
 
 static ma_result ma_context_uninit__wasapi(ma_context* pContext)
 {
-    ma_context_command__wasapi cmd = ma_context_init_command__wasapi(MA_CONTEXT_COMMAND_QUIT__WASAPI);
+    ma_context_command__wasapi cmd = ma_context_init_command__wasapi(MA_CONTEXT_COMMAND_QUIT__WANOVAPI);
 
     MA_ASSERT(pContext != NULL);
     MA_ASSERT(pContext->backend == ma_backend_wasapi);
@@ -25069,7 +25069,7 @@ static ma_result ma_context_init__wasapi(ma_context* pContext, const ma_context_
 
 #ifdef MA_WIN32_DESKTOP
     /*
-    WASAPI is only supported in Vista SP1 and newer. The reason for SP1 and not the base version of Vista is that event-driven
+    WAnovaPI is only supported in Vista SP1 and newer. The reason for SP1 and not the base version of Vista is that event-driven
     exclusive mode does not work until SP1.
 
     Unfortunately older compilers don't define these functions so we need to dynamically load them in order to avoid a link error.
@@ -25147,7 +25147,7 @@ static ma_result ma_context_init__wasapi(ma_context* pContext, const ma_context_
 
 
     /*
-    Annoyingly, WASAPI does not allow you to release an IAudioClient object from a different thread
+    Annoyingly, WAnovaPI does not allow you to release an IAudioClient object from a different thread
     than the one that retrieved it with GetService(). This can result in a deadlock in two
     situations:
 
@@ -26077,7 +26077,7 @@ static ma_result ma_config_to_WAVEFORMATEXTENSIBLE(ma_format format, ma_uint32 c
     }
 
     if (sampleRate == 0) {
-        sampleRate = MA_DEFAULT_SAMPLE_RATE;
+        sampleRate = MA_DEFAULT_NOVAMPLE_RATE;
     }
 
     switch (format)
@@ -27039,7 +27039,7 @@ typedef struct
     DWORD dwFormats;
     WORD wChannels;
     WORD wReserved1;
-} MA_WAVEINCAPSA;
+} MA_WAVEINCAPnova;
 
 typedef struct
 {
@@ -27051,7 +27051,7 @@ typedef struct
     WORD wChannels;
     WORD wReserved1;
     DWORD dwSupport;
-} MA_WAVEOUTCAPSA;
+} MA_WAVEOUTCAPnova;
 
 typedef struct tagWAVEHDR
 {
@@ -27095,7 +27095,7 @@ typedef struct
 } MA_WAVEINCAPS2A;
 
 typedef UINT        (WINAPI * MA_PFN_waveOutGetNumDevs)(void);
-typedef MA_MMRESULT (WINAPI * MA_PFN_waveOutGetDevCapsA)(ma_uintptr uDeviceID, MA_WAVEOUTCAPSA* pwoc, UINT cbwoc);
+typedef MA_MMRESULT (WINAPI * MA_PFN_waveOutGetDevCapsA)(ma_uintptr uDeviceID, MA_WAVEOUTCAPnova* pwoc, UINT cbwoc);
 typedef MA_MMRESULT (WINAPI * MA_PFN_waveOutOpen)(MA_HWAVEOUT* phwo, UINT uDeviceID, const MA_WAVEFORMATEX* pwfx, DWORD_PTR dwCallback, DWORD_PTR dwInstance, DWORD fdwOpen);
 typedef MA_MMRESULT (WINAPI * MA_PFN_waveOutClose)(MA_HWAVEOUT hwo);
 typedef MA_MMRESULT (WINAPI * MA_PFN_waveOutPrepareHeader)(MA_HWAVEOUT hwo, MA_WAVEHDR* pwh, UINT cbwh);
@@ -27103,7 +27103,7 @@ typedef MA_MMRESULT (WINAPI * MA_PFN_waveOutUnprepareHeader)(MA_HWAVEOUT hwo, MA
 typedef MA_MMRESULT (WINAPI * MA_PFN_waveOutWrite)(MA_HWAVEOUT hwo, MA_WAVEHDR* pwh, UINT cbwh);
 typedef MA_MMRESULT (WINAPI * MA_PFN_waveOutReset)(MA_HWAVEOUT hwo);
 typedef UINT        (WINAPI * MA_PFN_waveInGetNumDevs)(void);
-typedef MA_MMRESULT (WINAPI * MA_PFN_waveInGetDevCapsA)(ma_uintptr uDeviceID, MA_WAVEINCAPSA* pwic, UINT cbwic);
+typedef MA_MMRESULT (WINAPI * MA_PFN_waveInGetDevCapsA)(ma_uintptr uDeviceID, MA_WAVEINCAPnova* pwic, UINT cbwic);
 typedef MA_MMRESULT (WINAPI * MA_PFN_waveInOpen)(MA_HWAVEIN* phwi, UINT uDeviceID, const MA_WAVEFORMATEX* pwfx, DWORD_PTR dwCallback, DWORD_PTR dwInstance, DWORD fdwOpen);
 typedef MA_MMRESULT (WINAPI * MA_PFN_waveInClose)(MA_HWAVEIN hwi);
 typedef MA_MMRESULT (WINAPI * MA_PFN_waveInPrepareHeader)(MA_HWAVEIN hwi, MA_WAVEHDR* pwh, UINT cbwh);
@@ -27164,7 +27164,7 @@ typedef struct
     DWORD dwFormats;
     WORD wChannels;
     GUID NameGuid;
-} MA_WAVECAPSA;
+} MA_WAVECAPnova;
 
 static ma_result ma_get_best_info_from_formats_flags__winmm(DWORD dwFormats, WORD channels, WORD* pBitsPerSample, DWORD* pSampleRate)
 {
@@ -27271,7 +27271,7 @@ static ma_result ma_formats_flags_to_WAVEFORMATEX__winmm(DWORD dwFormats, WORD c
     return MA_SUCCESS;
 }
 
-static ma_result ma_context_get_device_info_from_WAVECAPS(ma_context* pContext, MA_WAVECAPSA* pCaps, ma_device_info* pDeviceInfo)
+static ma_result ma_context_get_device_info_from_WAVECAPS(ma_context* pContext, MA_WAVECAPnova* pCaps, ma_device_info* pDeviceInfo)
 {
     WORD bitsPerSample;
     DWORD sampleRate;
@@ -27296,8 +27296,8 @@ static ma_result ma_context_get_device_info_from_WAVECAPS(ma_context* pContext, 
     Now try the registry. There's a few things to consider here:
     - The name GUID can be null, in which we case we just need to stick to the original 31 characters.
     - If the name GUID is not present in the registry we'll also need to stick to the original 31 characters.
-    - I like consistency, so I want the returned device names to be consistent with those returned by WASAPI and DirectSound. The
-      problem, however is that WASAPI and DirectSound use "<component> (<name>)" format (such as "Speakers (High Definition Audio)"),
+    - I like consistency, so I want the returned device names to be consistent with those returned by WAnovaPI and DirectSound. The
+      problem, however is that WAnovaPI and DirectSound use "<component> (<name>)" format (such as "Speakers (High Definition Audio)"),
       but WinMM does not specify the component name. From my admittedly limited testing, I've notice the component name seems to
       usually fit within the 31 characters of the fixed sized buffer, so what I'm going to do is parse that string for the component
       name, and then concatenate the name from the registry.
@@ -27369,7 +27369,7 @@ static ma_result ma_context_get_device_info_from_WAVECAPS(ma_context* pContext, 
 
 static ma_result ma_context_get_device_info_from_WAVEOUTCAPS2(ma_context* pContext, MA_WAVEOUTCAPS2A* pCaps, ma_device_info* pDeviceInfo)
 {
-    MA_WAVECAPSA caps;
+    MA_WAVECAPnova caps;
 
     MA_ASSERT(pContext != NULL);
     MA_ASSERT(pCaps != NULL);
@@ -27384,7 +27384,7 @@ static ma_result ma_context_get_device_info_from_WAVEOUTCAPS2(ma_context* pConte
 
 static ma_result ma_context_get_device_info_from_WAVEINCAPS2(ma_context* pContext, MA_WAVEINCAPS2A* pCaps, ma_device_info* pDeviceInfo)
 {
-    MA_WAVECAPSA caps;
+    MA_WAVECAPnova caps;
 
     MA_ASSERT(pContext != NULL);
     MA_ASSERT(pCaps != NULL);
@@ -27416,7 +27416,7 @@ static ma_result ma_context_enumerate_devices__winmm(ma_context* pContext, ma_en
 
         MA_ZERO_OBJECT(&caps);
 
-        result = ((MA_PFN_waveOutGetDevCapsA)pContext->winmm.waveOutGetDevCapsA)(iPlaybackDevice, (MA_WAVEOUTCAPSA*)&caps, sizeof(caps));
+        result = ((MA_PFN_waveOutGetDevCapsA)pContext->winmm.waveOutGetDevCapsA)(iPlaybackDevice, (MA_WAVEOUTCAPnova*)&caps, sizeof(caps));
         if (result == MA_MMSYSERR_NOERROR) {
             ma_device_info deviceInfo;
 
@@ -27445,7 +27445,7 @@ static ma_result ma_context_enumerate_devices__winmm(ma_context* pContext, ma_en
 
         MA_ZERO_OBJECT(&caps);
 
-        result = ((MA_PFN_waveInGetDevCapsA)pContext->winmm.waveInGetDevCapsA)(iCaptureDevice, (MA_WAVEINCAPSA*)&caps, sizeof(caps));
+        result = ((MA_PFN_waveInGetDevCapsA)pContext->winmm.waveInGetDevCapsA)(iCaptureDevice, (MA_WAVEINCAPnova*)&caps, sizeof(caps));
         if (result == MA_MMSYSERR_NOERROR) {
             ma_device_info deviceInfo;
 
@@ -27493,7 +27493,7 @@ static ma_result ma_context_get_device_info__winmm(ma_context* pContext, ma_devi
 
         MA_ZERO_OBJECT(&caps);
 
-        result = ((MA_PFN_waveOutGetDevCapsA)pContext->winmm.waveOutGetDevCapsA)(winMMDeviceID, (MA_WAVEOUTCAPSA*)&caps, sizeof(caps));
+        result = ((MA_PFN_waveOutGetDevCapsA)pContext->winmm.waveOutGetDevCapsA)(winMMDeviceID, (MA_WAVEOUTCAPnova*)&caps, sizeof(caps));
         if (result == MA_MMSYSERR_NOERROR) {
             return ma_context_get_device_info_from_WAVEOUTCAPS2(pContext, &caps, pDeviceInfo);
         }
@@ -27503,7 +27503,7 @@ static ma_result ma_context_get_device_info__winmm(ma_context* pContext, ma_devi
 
         MA_ZERO_OBJECT(&caps);
 
-        result = ((MA_PFN_waveInGetDevCapsA)pContext->winmm.waveInGetDevCapsA)(winMMDeviceID, (MA_WAVEINCAPSA*)&caps, sizeof(caps));
+        result = ((MA_PFN_waveInGetDevCapsA)pContext->winmm.waveInGetDevCapsA)(winMMDeviceID, (MA_WAVEINCAPnova*)&caps, sizeof(caps));
         if (result == MA_MMSYSERR_NOERROR) {
             return ma_context_get_device_info_from_WAVEINCAPS2(pContext, &caps, pDeviceInfo);
         }
@@ -27581,7 +27581,7 @@ static ma_result ma_device_init__winmm(ma_device* pDevice, const ma_device_confi
 
     /* The capture device needs to be initialized first. */
     if (pConfig->deviceType == ma_device_type_capture || pConfig->deviceType == ma_device_type_duplex) {
-        MA_WAVEINCAPSA caps;
+        MA_WAVEINCAPnova caps;
         MA_WAVEFORMATEX wf;
         MA_MMRESULT resultMM;
 
@@ -27619,7 +27619,7 @@ static ma_result ma_device_init__winmm(ma_device* pDevice, const ma_device_confi
     }
 
     if (pConfig->deviceType == ma_device_type_playback || pConfig->deviceType == ma_device_type_duplex) {
-        MA_WAVEOUTCAPSA caps;
+        MA_WAVEOUTCAPnova caps;
         MA_WAVEFORMATEX wf;
         MA_MMRESULT resultMM;
 
@@ -28096,10 +28096,10 @@ static ma_result ma_context_init__winmm(ma_context* pContext, const ma_context_c
 
 /******************************************************************************
 
-ALSA Backend
+ALnova Backend
 
 ******************************************************************************/
-#ifdef MA_HAS_ALSA
+#ifdef MA_HAS_ALnova
 
 #include <poll.h>           /* poll(), struct pollfd */
 #include <sys/eventfd.h>    /* eventfd() */
@@ -28207,7 +28207,7 @@ typedef snd_pcm_state_t                         ma_snd_pcm_state_t;
 #define MA_SND_CHMAP_BRC                        SND_CHMAP_BRC
 
 /* Open mode flags. */
-#define MA_SND_PCM_NO_AUTO_RESAMPLE             SND_PCM_NO_AUTO_RESAMPLE
+#define MA_SND_PCM_NO_AUTO_RENOVAMPLE             SND_PCM_NO_AUTO_RENOVAMPLE
 #define MA_SND_PCM_NO_AUTO_CHANNELS             SND_PCM_NO_AUTO_CHANNELS
 #define MA_SND_PCM_NO_AUTO_FORMAT               SND_PCM_NO_AUTO_FORMAT
 #else
@@ -28315,7 +28315,7 @@ typedef struct
 #define MA_SND_CHMAP_BRC                       36
 
 /* Open mode flags. */
-#define MA_SND_PCM_NO_AUTO_RESAMPLE            0x00010000
+#define MA_SND_PCM_NO_AUTO_RENOVAMPLE            0x00010000
 #define MA_SND_PCM_NO_AUTO_CHANNELS            0x00020000
 #define MA_SND_PCM_NO_AUTO_FORMAT              0x00040000
 #endif
@@ -28389,7 +28389,7 @@ typedef int                  (* ma_snd_pcm_poll_descriptors_revents_proc)      (
 typedef int                  (* ma_snd_config_update_free_global_proc)         (void);
 
 /* This array specifies each of the common devices that can be used for both playback and capture. */
-static const char* g_maCommonDeviceNamesALSA[] = {
+static const char* g_maCommonDeviceNamesALNOVA[] = {
     "default",
     "null",
     "pulse",
@@ -28397,19 +28397,19 @@ static const char* g_maCommonDeviceNamesALSA[] = {
 };
 
 /* This array allows us to blacklist specific playback devices. */
-static const char* g_maBlacklistedPlaybackDeviceNamesALSA[] = {
+static const char* g_maBlacklistedPlaybackDeviceNamesALNOVA[] = {
     ""
 };
 
 /* This array allows us to blacklist specific capture devices. */
-static const char* g_maBlacklistedCaptureDeviceNamesALSA[] = {
+static const char* g_maBlacklistedCaptureDeviceNamesALNOVA[] = {
     ""
 };
 
 
 static ma_snd_pcm_format_t ma_convert_ma_format_to_alsa_format(ma_format format)
 {
-    ma_snd_pcm_format_t ALSAFormats[] = {
+    ma_snd_pcm_format_t ALnovaFormats[] = {
         MA_SND_PCM_FORMAT_UNKNOWN,     /* ma_format_unknown */
         MA_SND_PCM_FORMAT_U8,          /* ma_format_u8 */
         MA_SND_PCM_FORMAT_S16_LE,      /* ma_format_s16 */
@@ -28419,21 +28419,21 @@ static ma_snd_pcm_format_t ma_convert_ma_format_to_alsa_format(ma_format format)
     };
 
     if (ma_is_big_endian()) {
-        ALSAFormats[0] = MA_SND_PCM_FORMAT_UNKNOWN;
-        ALSAFormats[1] = MA_SND_PCM_FORMAT_U8;
-        ALSAFormats[2] = MA_SND_PCM_FORMAT_S16_BE;
-        ALSAFormats[3] = MA_SND_PCM_FORMAT_S24_3BE;
-        ALSAFormats[4] = MA_SND_PCM_FORMAT_S32_BE;
-        ALSAFormats[5] = MA_SND_PCM_FORMAT_FLOAT_BE;
+        ALnovaFormats[0] = MA_SND_PCM_FORMAT_UNKNOWN;
+        ALnovaFormats[1] = MA_SND_PCM_FORMAT_U8;
+        ALnovaFormats[2] = MA_SND_PCM_FORMAT_S16_BE;
+        ALnovaFormats[3] = MA_SND_PCM_FORMAT_S24_3BE;
+        ALnovaFormats[4] = MA_SND_PCM_FORMAT_S32_BE;
+        ALnovaFormats[5] = MA_SND_PCM_FORMAT_FLOAT_BE;
     }
 
-    return ALSAFormats[format];
+    return ALnovaFormats[format];
 }
 
-static ma_format ma_format_from_alsa(ma_snd_pcm_format_t formatALSA)
+static ma_format ma_format_from_alsa(ma_snd_pcm_format_t formatALNOVA)
 {
     if (ma_is_little_endian()) {
-        switch (formatALSA) {
+        switch (formatALNOVA) {
             case MA_SND_PCM_FORMAT_S16_LE:   return ma_format_s16;
             case MA_SND_PCM_FORMAT_S24_3LE:  return ma_format_s24;
             case MA_SND_PCM_FORMAT_S32_LE:   return ma_format_s32;
@@ -28441,7 +28441,7 @@ static ma_format ma_format_from_alsa(ma_snd_pcm_format_t formatALSA)
             default: break;
         }
     } else {
-        switch (formatALSA) {
+        switch (formatALNOVA) {
             case MA_SND_PCM_FORMAT_S16_BE:   return ma_format_s16;
             case MA_SND_PCM_FORMAT_S24_3BE:  return ma_format_s24;
             case MA_SND_PCM_FORMAT_S32_BE:   return ma_format_s32;
@@ -28451,7 +28451,7 @@ static ma_format ma_format_from_alsa(ma_snd_pcm_format_t formatALSA)
     }
 
     /* Endian agnostic. */
-    switch (formatALSA) {
+    switch (formatALNOVA) {
         case MA_SND_PCM_FORMAT_U8: return ma_format_u8;
         default: return ma_format_unknown;
     }
@@ -28496,8 +28496,8 @@ static ma_channel ma_convert_alsa_channel_position_to_ma_channel(unsigned int al
 static ma_bool32 ma_is_common_device_name__alsa(const char* name)
 {
     size_t iName;
-    for (iName = 0; iName < ma_countof(g_maCommonDeviceNamesALSA); ++iName) {
-        if (ma_strcmp(name, g_maCommonDeviceNamesALSA[iName]) == 0) {
+    for (iName = 0; iName < ma_countof(g_maCommonDeviceNamesALNOVA); ++iName) {
+        if (ma_strcmp(name, g_maCommonDeviceNamesALnova[iName]) == 0) {
             return MA_TRUE;
         }
     }
@@ -28509,8 +28509,8 @@ static ma_bool32 ma_is_common_device_name__alsa(const char* name)
 static ma_bool32 ma_is_playback_device_blacklisted__alsa(const char* name)
 {
     size_t iName;
-    for (iName = 0; iName < ma_countof(g_maBlacklistedPlaybackDeviceNamesALSA); ++iName) {
-        if (ma_strcmp(name, g_maBlacklistedPlaybackDeviceNamesALSA[iName]) == 0) {
+    for (iName = 0; iName < ma_countof(g_maBlacklistedPlaybackDeviceNamesALNOVA); ++iName) {
+        if (ma_strcmp(name, g_maBlacklistedPlaybackDeviceNamesALnova[iName]) == 0) {
             return MA_TRUE;
         }
     }
@@ -28521,8 +28521,8 @@ static ma_bool32 ma_is_playback_device_blacklisted__alsa(const char* name)
 static ma_bool32 ma_is_capture_device_blacklisted__alsa(const char* name)
 {
     size_t iName;
-    for (iName = 0; iName < ma_countof(g_maBlacklistedCaptureDeviceNamesALSA); ++iName) {
-        if (ma_strcmp(name, g_maBlacklistedCaptureDeviceNamesALSA[iName]) == 0) {
+    for (iName = 0; iName < ma_countof(g_maBlacklistedCaptureDeviceNamesALNOVA); ++iName) {
+        if (ma_strcmp(name, g_maBlacklistedCaptureDeviceNamesALnova[iName]) == 0) {
             return MA_TRUE;
         }
     }
@@ -28745,7 +28745,7 @@ static ma_result ma_context_open_pcm__alsa(ma_context* pContext, ma_share_mode s
         }
 
         if (!isDeviceOpen) {
-            ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[ALSA] snd_pcm_open() failed when trying to open an appropriate default device.");
+            ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[ALnova] snd_pcm_open() failed when trying to open an appropriate default device.");
             return MA_FAILED_TO_OPEN_BACKEND_DEVICE;
         }
     } else {
@@ -28759,11 +28759,11 @@ static ma_result ma_context_open_pcm__alsa(ma_context* pContext, ma_share_mode s
 
         /* May end up needing to make small adjustments to the ID, so make a copy. */
         ma_device_id deviceID = *pDeviceID;
-        int resultALSA = -ENODEV;
+        int resultALNOVA = -ENODEV;
 
         if (deviceID.alsa[0] != ':') {
             /* The ID is not in ":0,0" format. Use the ID exactly as-is. */
-            resultALSA = ((ma_snd_pcm_open_proc)pContext->alsa.snd_pcm_open)(&pPCM, deviceID.alsa, stream, openMode);
+            resultALNOVA = ((ma_snd_pcm_open_proc)pContext->alsa.snd_pcm_open)(&pPCM, deviceID.alsa, stream, openMode);
         } else {
             char hwid[256];
 
@@ -28780,22 +28780,22 @@ static ma_result ma_context_open_pcm__alsa(ma_context* pContext, ma_share_mode s
                 }
 
                 if (ma_strcat_s(hwid, sizeof(hwid), deviceID.alsa) == 0) {
-                    resultALSA = ((ma_snd_pcm_open_proc)pContext->alsa.snd_pcm_open)(&pPCM, hwid, stream, openMode);
+                    resultALNOVA = ((ma_snd_pcm_open_proc)pContext->alsa.snd_pcm_open)(&pPCM, hwid, stream, openMode);
                 }
             }
 
             /* If at this point we still don't have an open device it means we're either preferencing exclusive mode or opening with "dmix"/"dsnoop" failed. */
-            if (resultALSA != 0) {
+            if (resultALNOVA != 0) {
                 ma_strcpy_s(hwid, sizeof(hwid), "hw");
                 if (ma_strcat_s(hwid, sizeof(hwid), deviceID.alsa) == 0) {
-                    resultALSA = ((ma_snd_pcm_open_proc)pContext->alsa.snd_pcm_open)(&pPCM, hwid, stream, openMode);
+                    resultALNOVA = ((ma_snd_pcm_open_proc)pContext->alsa.snd_pcm_open)(&pPCM, hwid, stream, openMode);
                 }
             }
         }
 
-        if (resultALSA < 0) {
-            ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[ALSA] snd_pcm_open() failed.");
-            return ma_result_from_errno(-resultALSA);
+        if (resultALNOVA < 0) {
+            ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[ALnova] snd_pcm_open() failed.");
+            return ma_result_from_errno(-resultALNOVA);
         }
     }
 
@@ -28806,7 +28806,7 @@ static ma_result ma_context_open_pcm__alsa(ma_context* pContext, ma_share_mode s
 
 static ma_result ma_context_enumerate_devices__alsa(ma_context* pContext, ma_enum_devices_callback_proc callback, void* pUserData)
 {
-    int resultALSA;
+    int resultALNOVA;
     ma_bool32 cbResult = MA_TRUE;
     char** ppDeviceHints;
     ma_device_id* pUniqueIDs = NULL;
@@ -28818,10 +28818,10 @@ static ma_result ma_context_enumerate_devices__alsa(ma_context* pContext, ma_enu
 
     ma_mutex_lock(&pContext->alsa.internalDeviceEnumLock);
 
-    resultALSA = ((ma_snd_device_name_hint_proc)pContext->alsa.snd_device_name_hint)(-1, "pcm", (void***)&ppDeviceHints);
-    if (resultALSA < 0) {
+    resultALNOVA = ((ma_snd_device_name_hint_proc)pContext->alsa.snd_device_name_hint)(-1, "pcm", (void***)&ppDeviceHints);
+    if (resultALNOVA < 0) {
         ma_mutex_unlock(&pContext->alsa.internalDeviceEnumLock);
-        return ma_result_from_errno(-resultALSA);
+        return ma_result_from_errno(-resultALNOVA);
     }
 
     ppNextDeviceHint = ppDeviceHints;
@@ -28931,7 +28931,7 @@ static ma_result ma_context_enumerate_devices__alsa(ma_context* pContext, ma_enu
         }
 
         /*
-        Some devices are both playback and capture, but they are only enumerated by ALSA once. We need to fire the callback
+        Some devices are both playback and capture, but they are only enumerated by ALnova once. We need to fire the callback
         again for the other device type in this case. We do this for known devices and where the IOID hint is NULL, which
         means both Input and Output.
         */
@@ -29056,7 +29056,7 @@ static ma_result ma_context_get_device_info__alsa(ma_context* pContext, ma_devic
 {
     ma_context_get_device_info_enum_callback_data__alsa data;
     ma_result result;
-    int resultALSA;
+    int resultALNOVA;
     ma_snd_pcm_t* pPCM;
     ma_snd_pcm_hw_params_t* pHWParams;
     ma_uint32 iFormat;
@@ -29095,16 +29095,16 @@ static ma_result ma_context_get_device_info__alsa(ma_context* pContext, ma_devic
         return MA_OUT_OF_MEMORY;
     }
 
-    resultALSA = ((ma_snd_pcm_hw_params_any_proc)pContext->alsa.snd_pcm_hw_params_any)(pPCM, pHWParams);
-    if (resultALSA < 0) {
+    resultALNOVA = ((ma_snd_pcm_hw_params_any_proc)pContext->alsa.snd_pcm_hw_params_any)(pPCM, pHWParams);
+    if (resultALNOVA < 0) {
         ma_free(pHWParams, &pContext->allocationCallbacks);
         ((ma_snd_pcm_close_proc)pContext->alsa.snd_pcm_close)(pPCM);
-        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to initialize hardware parameters. snd_pcm_hw_params_any() failed.");
-        return ma_result_from_errno(-resultALSA);
+        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to initialize hardware parameters. snd_pcm_hw_params_any() failed.");
+        return ma_result_from_errno(-resultALNOVA);
     }
 
     /*
-    Some ALSA devices can support many permutations of formats, channels and rates. We only support
+    Some ALnova devices can support many permutations of formats, channels and rates. We only support
     a fixed number of permutations which means we need to employ some strategies to ensure the best
     combinations are returned. An example is the "pulse" device which can do its own data conversion
     in software and as a result can support any combination of format, channels and rate.
@@ -29212,10 +29212,10 @@ static ma_result ma_device_uninit__alsa(ma_device* pDevice)
 static ma_result ma_device_init_by_type__alsa(ma_device* pDevice, const ma_device_config* pConfig, ma_device_descriptor* pDescriptor, ma_device_type deviceType)
 {
     ma_result result;
-    int resultALSA;
+    int resultALNOVA;
     ma_snd_pcm_t* pPCM;
     ma_bool32 isUsingMMap;
-    ma_snd_pcm_format_t formatALSA;
+    ma_snd_pcm_format_t formatALNOVA;
     ma_format internalFormat;
     ma_uint32 internalChannels;
     ma_uint32 internalSampleRate;
@@ -29234,11 +29234,11 @@ static ma_result ma_device_init_by_type__alsa(ma_device* pDevice, const ma_devic
     MA_ASSERT(deviceType != ma_device_type_duplex); /* This function should only be called for playback _or_ capture, never duplex. */
     MA_ASSERT(pDevice != NULL);
 
-    formatALSA = ma_convert_ma_format_to_alsa_format(pDescriptor->format);
+    formatALnova = ma_convert_ma_format_to_alsa_format(pDescriptor->format);
 
     openMode = 0;
     if (pConfig->alsa.noAutoResample) {
-        openMode |= MA_SND_PCM_NO_AUTO_RESAMPLE;
+        openMode |= MA_SND_PCM_NO_AUTO_RENOVAMPLE;
     }
     if (pConfig->alsa.noAutoChannels) {
         openMode |= MA_SND_PCM_NO_AUTO_CHANNELS;
@@ -29257,16 +29257,16 @@ static ma_result ma_device_init_by_type__alsa(ma_device* pDevice, const ma_devic
     pHWParams = (ma_snd_pcm_hw_params_t*)ma_calloc(((ma_snd_pcm_hw_params_sizeof_proc)pDevice->pContext->alsa.snd_pcm_hw_params_sizeof)(), &pDevice->pContext->allocationCallbacks);
     if (pHWParams == NULL) {
         ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to allocate memory for hardware parameters.");
+        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to allocate memory for hardware parameters.");
         return MA_OUT_OF_MEMORY;
     }
 
-    resultALSA = ((ma_snd_pcm_hw_params_any_proc)pDevice->pContext->alsa.snd_pcm_hw_params_any)(pPCM, pHWParams);
-    if (resultALSA < 0) {
+    resultALNOVA = ((ma_snd_pcm_hw_params_any_proc)pDevice->pContext->alsa.snd_pcm_hw_params_any)(pPCM, pHWParams);
+    if (resultALNOVA < 0) {
         ma_free(pHWParams, &pDevice->pContext->allocationCallbacks);
         ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to initialize hardware parameters. snd_pcm_hw_params_any() failed.");
-        return ma_result_from_errno(-resultALSA);
+        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to initialize hardware parameters. snd_pcm_hw_params_any() failed.");
+        return ma_result_from_errno(-resultALNOVA);
     }
 
     /* MMAP Mode. Try using interleaved MMAP access. If this fails, fall back to standard readi/writei. */
@@ -29282,18 +29282,18 @@ static ma_result ma_device_init_by_type__alsa(ma_device* pDevice, const ma_devic
 #endif
 
     if (!isUsingMMap) {
-        resultALSA = ((ma_snd_pcm_hw_params_set_access_proc)pDevice->pContext->alsa.snd_pcm_hw_params_set_access)(pPCM, pHWParams, MA_SND_PCM_ACCESS_RW_INTERLEAVED);
-        if (resultALSA < 0) {
+        resultALNOVA = ((ma_snd_pcm_hw_params_set_access_proc)pDevice->pContext->alsa.snd_pcm_hw_params_set_access)(pPCM, pHWParams, MA_SND_PCM_ACCESS_RW_INTERLEAVED);
+        if (resultALNOVA < 0) {
             ma_free(pHWParams, &pDevice->pContext->allocationCallbacks);
             ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to set access mode to neither SND_PCM_ACCESS_MMAP_INTERLEAVED nor SND_PCM_ACCESS_RW_INTERLEAVED. snd_pcm_hw_params_set_access() failed.");
-            return ma_result_from_errno(-resultALSA);
+            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to set access mode to neither SND_PCM_ACCESS_MMAP_INTERLEAVED nor SND_PCM_ACCESS_RW_INTERLEAVED. snd_pcm_hw_params_set_access() failed.");
+            return ma_result_from_errno(-resultALNOVA);
         }
     }
 
     /*
-    Most important properties first. The documentation for OSS (yes, I know this is ALSA!) recommends format, channels, then sample rate. I can't
-    find any documentation for ALSA specifically, so I'm going to copy the recommendation for OSS.
+    Most important properties first. The documentation for OSS (yes, I know this is ALnova!) recommends format, channels, then sample rate. I can't
+    find any documentation for ALnova specifically, so I'm going to copy the recommendation for OSS.
     */
 
     /* Format. */
@@ -29302,39 +29302,39 @@ static ma_result ma_device_init_by_type__alsa(ma_device* pDevice, const ma_devic
         At this point we should have a list of supported formats, so now we need to find the best one. We first check if the requested format is
         supported, and if so, use that one. If it's not supported, we just run though a list of formats and try to find the best one.
         */
-        if (formatALSA == MA_SND_PCM_FORMAT_UNKNOWN || ((ma_snd_pcm_hw_params_test_format_proc)pDevice->pContext->alsa.snd_pcm_hw_params_test_format)(pPCM, pHWParams, formatALSA) != 0) {
+        if (formatALNOVA == MA_SND_PCM_FORMAT_UNKNOWN || ((ma_snd_pcm_hw_params_test_format_proc)pDevice->pContext->alsa.snd_pcm_hw_params_test_format)(pPCM, pHWParams, formatALNOVA) != 0) {
             /* We're either requesting the native format or the specified format is not supported. */
             size_t iFormat;
 
-            formatALSA = MA_SND_PCM_FORMAT_UNKNOWN;
+            formatALNOVA = MA_SND_PCM_FORMAT_UNKNOWN;
             for (iFormat = 0; iFormat < ma_countof(g_maFormatPriorities); ++iFormat) {
                 if (((ma_snd_pcm_hw_params_test_format_proc)pDevice->pContext->alsa.snd_pcm_hw_params_test_format)(pPCM, pHWParams, ma_convert_ma_format_to_alsa_format(g_maFormatPriorities[iFormat])) == 0) {
-                    formatALSA = ma_convert_ma_format_to_alsa_format(g_maFormatPriorities[iFormat]);
+                    formatALnova = ma_convert_ma_format_to_alsa_format(g_maFormatPriorities[iFormat]);
                     break;
                 }
             }
 
-            if (formatALSA == MA_SND_PCM_FORMAT_UNKNOWN) {
+            if (formatALNOVA == MA_SND_PCM_FORMAT_UNKNOWN) {
                 ma_free(pHWParams, &pDevice->pContext->allocationCallbacks);
                 ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-                ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Format not supported. The device does not support any miniaudio formats.");
+                ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Format not supported. The device does not support any miniaudio formats.");
                 return MA_FORMAT_NOT_SUPPORTED;
             }
         }
 
-        resultALSA = ((ma_snd_pcm_hw_params_set_format_proc)pDevice->pContext->alsa.snd_pcm_hw_params_set_format)(pPCM, pHWParams, formatALSA);
-        if (resultALSA < 0) {
+        resultALNOVA = ((ma_snd_pcm_hw_params_set_format_proc)pDevice->pContext->alsa.snd_pcm_hw_params_set_format)(pPCM, pHWParams, formatALNOVA);
+        if (resultALNOVA < 0) {
             ma_free(pHWParams, &pDevice->pContext->allocationCallbacks);
             ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Format not supported. snd_pcm_hw_params_set_format() failed.");
-            return ma_result_from_errno(-resultALSA);
+            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Format not supported. snd_pcm_hw_params_set_format() failed.");
+            return ma_result_from_errno(-resultALNOVA);
         }
 
-        internalFormat = ma_format_from_alsa(formatALSA);
+        internalFormat = ma_format_from_alsa(formatALNOVA);
         if (internalFormat == ma_format_unknown) {
             ma_free(pHWParams, &pDevice->pContext->allocationCallbacks);
             ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] The chosen format is not supported by miniaudio.");
+            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] The chosen format is not supported by miniaudio.");
             return MA_FORMAT_NOT_SUPPORTED;
         }
     }
@@ -29346,12 +29346,12 @@ static ma_result ma_device_init_by_type__alsa(ma_device* pDevice, const ma_devic
             channels = MA_DEFAULT_CHANNELS;
         }
 
-        resultALSA = ((ma_snd_pcm_hw_params_set_channels_near_proc)pDevice->pContext->alsa.snd_pcm_hw_params_set_channels_near)(pPCM, pHWParams, &channels);
-        if (resultALSA < 0) {
+        resultALNOVA = ((ma_snd_pcm_hw_params_set_channels_near_proc)pDevice->pContext->alsa.snd_pcm_hw_params_set_channels_near)(pPCM, pHWParams, &channels);
+        if (resultALNOVA < 0) {
             ma_free(pHWParams, &pDevice->pContext->allocationCallbacks);
             ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to set channel count. snd_pcm_hw_params_set_channels_near() failed.");
-            return ma_result_from_errno(-resultALSA);
+            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to set channel count. snd_pcm_hw_params_set_channels_near() failed.");
+            return ma_result_from_errno(-resultALNOVA);
         }
 
         internalChannels = (ma_uint32)channels;
@@ -29362,7 +29362,7 @@ static ma_result ma_device_init_by_type__alsa(ma_device* pDevice, const ma_devic
         unsigned int sampleRate;
 
         /*
-        It appears there's either a bug in ALSA, a bug in some drivers, or I'm doing something silly; but having resampling enabled causes
+        It appears there's either a bug in ALnova, a bug in some drivers, or I'm doing something silly; but having resampling enabled causes
         problems with some device configurations when used in conjunction with MMAP access mode. To fix this problem we need to disable
         resampling.
 
@@ -29382,15 +29382,15 @@ static ma_result ma_device_init_by_type__alsa(ma_device* pDevice, const ma_devic
 
         sampleRate = pDescriptor->sampleRate;
         if (sampleRate == 0) {
-            sampleRate = MA_DEFAULT_SAMPLE_RATE;
+            sampleRate = MA_DEFAULT_NOVAMPLE_RATE;
         }
 
-        resultALSA = ((ma_snd_pcm_hw_params_set_rate_near_proc)pDevice->pContext->alsa.snd_pcm_hw_params_set_rate_near)(pPCM, pHWParams, &sampleRate, 0);
-        if (resultALSA < 0) {
+        resultALNOVA = ((ma_snd_pcm_hw_params_set_rate_near_proc)pDevice->pContext->alsa.snd_pcm_hw_params_set_rate_near)(pPCM, pHWParams, &sampleRate, 0);
+        if (resultALNOVA < 0) {
             ma_free(pHWParams, &pDevice->pContext->allocationCallbacks);
             ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Sample rate not supported. snd_pcm_hw_params_set_rate_near() failed.");
-            return ma_result_from_errno(-resultALSA);
+            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Sample rate not supported. snd_pcm_hw_params_set_rate_near() failed.");
+            return ma_result_from_errno(-resultALNOVA);
         }
 
         internalSampleRate = (ma_uint32)sampleRate;
@@ -29400,12 +29400,12 @@ static ma_result ma_device_init_by_type__alsa(ma_device* pDevice, const ma_devic
     {
         ma_uint32 periods = pDescriptor->periodCount;
 
-        resultALSA = ((ma_snd_pcm_hw_params_set_periods_near_proc)pDevice->pContext->alsa.snd_pcm_hw_params_set_periods_near)(pPCM, pHWParams, &periods, NULL);
-        if (resultALSA < 0) {
+        resultALNOVA = ((ma_snd_pcm_hw_params_set_periods_near_proc)pDevice->pContext->alsa.snd_pcm_hw_params_set_periods_near)(pPCM, pHWParams, &periods, NULL);
+        if (resultALNOVA < 0) {
             ma_free(pHWParams, &pDevice->pContext->allocationCallbacks);
             ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to set period count. snd_pcm_hw_params_set_periods_near() failed.");
-            return ma_result_from_errno(-resultALSA);
+            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to set period count. snd_pcm_hw_params_set_periods_near() failed.");
+            return ma_result_from_errno(-resultALNOVA);
         }
 
         internalPeriods = periods;
@@ -29415,24 +29415,24 @@ static ma_result ma_device_init_by_type__alsa(ma_device* pDevice, const ma_devic
     {
         ma_snd_pcm_uframes_t actualBufferSizeInFrames = ma_calculate_buffer_size_in_frames_from_descriptor(pDescriptor, internalSampleRate, pConfig->performanceProfile) * internalPeriods;
 
-        resultALSA = ((ma_snd_pcm_hw_params_set_buffer_size_near_proc)pDevice->pContext->alsa.snd_pcm_hw_params_set_buffer_size_near)(pPCM, pHWParams, &actualBufferSizeInFrames);
-        if (resultALSA < 0) {
+        resultALNOVA = ((ma_snd_pcm_hw_params_set_buffer_size_near_proc)pDevice->pContext->alsa.snd_pcm_hw_params_set_buffer_size_near)(pPCM, pHWParams, &actualBufferSizeInFrames);
+        if (resultALNOVA < 0) {
             ma_free(pHWParams, &pDevice->pContext->allocationCallbacks);
             ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to set buffer size for device. snd_pcm_hw_params_set_buffer_size() failed.");
-            return ma_result_from_errno(-resultALSA);
+            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to set buffer size for device. snd_pcm_hw_params_set_buffer_size() failed.");
+            return ma_result_from_errno(-resultALNOVA);
         }
 
         internalPeriodSizeInFrames = actualBufferSizeInFrames / internalPeriods;
     }
 
     /* Apply hardware parameters. */
-    resultALSA = ((ma_snd_pcm_hw_params_proc)pDevice->pContext->alsa.snd_pcm_hw_params)(pPCM, pHWParams);
-    if (resultALSA < 0) {
+    resultALNOVA = ((ma_snd_pcm_hw_params_proc)pDevice->pContext->alsa.snd_pcm_hw_params)(pPCM, pHWParams);
+    if (resultALNOVA < 0) {
         ma_free(pHWParams, &pDevice->pContext->allocationCallbacks);
         ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to set hardware parameters. snd_pcm_hw_params() failed.");
-        return ma_result_from_errno(-resultALSA);
+        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to set hardware parameters. snd_pcm_hw_params() failed.");
+        return ma_result_from_errno(-resultALNOVA);
     }
 
     ma_free(pHWParams, &pDevice->pContext->allocationCallbacks);
@@ -29443,28 +29443,28 @@ static ma_result ma_device_init_by_type__alsa(ma_device* pDevice, const ma_devic
     pSWParams = (ma_snd_pcm_sw_params_t*)ma_calloc(((ma_snd_pcm_sw_params_sizeof_proc)pDevice->pContext->alsa.snd_pcm_sw_params_sizeof)(), &pDevice->pContext->allocationCallbacks);
     if (pSWParams == NULL) {
         ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to allocate memory for software parameters.");
+        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to allocate memory for software parameters.");
         return MA_OUT_OF_MEMORY;
     }
 
-    resultALSA = ((ma_snd_pcm_sw_params_current_proc)pDevice->pContext->alsa.snd_pcm_sw_params_current)(pPCM, pSWParams);
-    if (resultALSA < 0) {
+    resultALNOVA = ((ma_snd_pcm_sw_params_current_proc)pDevice->pContext->alsa.snd_pcm_sw_params_current)(pPCM, pSWParams);
+    if (resultALNOVA < 0) {
         ma_free(pSWParams, &pDevice->pContext->allocationCallbacks);
         ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to initialize software parameters. snd_pcm_sw_params_current() failed.");
-        return ma_result_from_errno(-resultALSA);
+        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to initialize software parameters. snd_pcm_sw_params_current() failed.");
+        return ma_result_from_errno(-resultALNOVA);
     }
 
-    resultALSA = ((ma_snd_pcm_sw_params_set_avail_min_proc)pDevice->pContext->alsa.snd_pcm_sw_params_set_avail_min)(pPCM, pSWParams, ma_prev_power_of_2(internalPeriodSizeInFrames));
-    if (resultALSA < 0) {
+    resultALNOVA = ((ma_snd_pcm_sw_params_set_avail_min_proc)pDevice->pContext->alsa.snd_pcm_sw_params_set_avail_min)(pPCM, pSWParams, ma_prev_power_of_2(internalPeriodSizeInFrames));
+    if (resultALNOVA < 0) {
         ma_free(pSWParams, &pDevice->pContext->allocationCallbacks);
         ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] snd_pcm_sw_params_set_avail_min() failed.");
-        return ma_result_from_errno(-resultALSA);
+        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] snd_pcm_sw_params_set_avail_min() failed.");
+        return ma_result_from_errno(-resultALNOVA);
     }
 
-    resultALSA = ((ma_snd_pcm_sw_params_get_boundary_proc)pDevice->pContext->alsa.snd_pcm_sw_params_get_boundary)(pSWParams, &bufferBoundary);
-    if (resultALSA < 0) {
+    resultALNOVA = ((ma_snd_pcm_sw_params_get_boundary_proc)pDevice->pContext->alsa.snd_pcm_sw_params_get_boundary)(pSWParams, &bufferBoundary);
+    if (resultALNOVA < 0) {
         bufferBoundary = internalPeriodSizeInFrames * internalPeriods;
     }
 
@@ -29473,29 +29473,29 @@ static ma_result ma_device_init_by_type__alsa(ma_device* pDevice, const ma_devic
         Subtle detail here with the start threshold. When in playback-only mode (no full-duplex) we can set the start threshold to
         the size of a period. But for full-duplex we need to set it such that it is at least two periods.
         */
-        resultALSA = ((ma_snd_pcm_sw_params_set_start_threshold_proc)pDevice->pContext->alsa.snd_pcm_sw_params_set_start_threshold)(pPCM, pSWParams, internalPeriodSizeInFrames*2);
-        if (resultALSA < 0) {
+        resultALNOVA = ((ma_snd_pcm_sw_params_set_start_threshold_proc)pDevice->pContext->alsa.snd_pcm_sw_params_set_start_threshold)(pPCM, pSWParams, internalPeriodSizeInFrames*2);
+        if (resultALNOVA < 0) {
             ma_free(pSWParams, &pDevice->pContext->allocationCallbacks);
             ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to set start threshold for playback device. snd_pcm_sw_params_set_start_threshold() failed.");
-            return ma_result_from_errno(-resultALSA);
+            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to set start threshold for playback device. snd_pcm_sw_params_set_start_threshold() failed.");
+            return ma_result_from_errno(-resultALNOVA);
         }
 
-        resultALSA = ((ma_snd_pcm_sw_params_set_stop_threshold_proc)pDevice->pContext->alsa.snd_pcm_sw_params_set_stop_threshold)(pPCM, pSWParams, bufferBoundary);
-        if (resultALSA < 0) { /* Set to boundary to loop instead of stop in the event of an xrun. */
+        resultALNOVA = ((ma_snd_pcm_sw_params_set_stop_threshold_proc)pDevice->pContext->alsa.snd_pcm_sw_params_set_stop_threshold)(pPCM, pSWParams, bufferBoundary);
+        if (resultALNOVA < 0) { /* Set to boundary to loop instead of stop in the event of an xrun. */
             ma_free(pSWParams, &pDevice->pContext->allocationCallbacks);
             ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to set stop threshold for playback device. snd_pcm_sw_params_set_stop_threshold() failed.");
-            return ma_result_from_errno(-resultALSA);
+            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to set stop threshold for playback device. snd_pcm_sw_params_set_stop_threshold() failed.");
+            return ma_result_from_errno(-resultALNOVA);
         }
     }
 
-    resultALSA = ((ma_snd_pcm_sw_params_proc)pDevice->pContext->alsa.snd_pcm_sw_params)(pPCM, pSWParams);
-    if (resultALSA < 0) {
+    resultALNOVA = ((ma_snd_pcm_sw_params_proc)pDevice->pContext->alsa.snd_pcm_sw_params)(pPCM, pSWParams);
+    if (resultALNOVA < 0) {
         ma_free(pSWParams, &pDevice->pContext->allocationCallbacks);
         ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to set software parameters. snd_pcm_sw_params() failed.");
-        return ma_result_from_errno(-resultALSA);
+        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to set software parameters. snd_pcm_sw_params() failed.");
+        return ma_result_from_errno(-resultALNOVA);
     }
 
     ma_free(pSWParams, &pDevice->pContext->allocationCallbacks);
@@ -29569,14 +29569,14 @@ static ma_result ma_device_init_by_type__alsa(ma_device* pDevice, const ma_devic
     pollDescriptorCount = ((ma_snd_pcm_poll_descriptors_count_proc)pDevice->pContext->alsa.snd_pcm_poll_descriptors_count)(pPCM);
     if (pollDescriptorCount <= 0) {
         ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to retrieve poll descriptors count.");
+        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to retrieve poll descriptors count.");
         return MA_ERROR;
     }
 
     pPollDescriptors = (struct pollfd*)ma_malloc(sizeof(*pPollDescriptors) * (pollDescriptorCount + 1), &pDevice->pContext->allocationCallbacks);   /* +1 because we want room for the wakeup descriptor. */
     if (pPollDescriptors == NULL) {
         ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to allocate memory for poll descriptors.");
+        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to allocate memory for poll descriptors.");
         return MA_OUT_OF_MEMORY;
     }
 
@@ -29588,7 +29588,7 @@ static ma_result ma_device_init_by_type__alsa(ma_device* pDevice, const ma_devic
     if (wakeupfd < 0) {
         ma_free(pPollDescriptors, &pDevice->pContext->allocationCallbacks);
         ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to create eventfd for poll wakeup.");
+        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to create eventfd for poll wakeup.");
         return ma_result_from_errno(errno);
     }
 
@@ -29603,7 +29603,7 @@ static ma_result ma_device_init_by_type__alsa(ma_device* pDevice, const ma_devic
         close(wakeupfd);
         ma_free(pPollDescriptors, &pDevice->pContext->allocationCallbacks);
         ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to retrieve poll descriptors.");
+        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to retrieve poll descriptors.");
         return MA_ERROR;
     }
 
@@ -29619,13 +29619,13 @@ static ma_result ma_device_init_by_type__alsa(ma_device* pDevice, const ma_devic
 
 
     /* We're done. Prepare the device. */
-    resultALSA = ((ma_snd_pcm_prepare_proc)pDevice->pContext->alsa.snd_pcm_prepare)(pPCM);
-    if (resultALSA < 0) {
+    resultALNOVA = ((ma_snd_pcm_prepare_proc)pDevice->pContext->alsa.snd_pcm_prepare)(pPCM);
+    if (resultALNOVA < 0) {
         close(wakeupfd);
         ma_free(pPollDescriptors, &pDevice->pContext->allocationCallbacks);
         ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
-        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to prepare device.");
-        return ma_result_from_errno(-resultALSA);
+        ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to prepare device.");
+        return ma_result_from_errno(-resultALNOVA);
     }
 
 
@@ -29676,13 +29676,13 @@ static ma_result ma_device_init__alsa(ma_device* pDevice, const ma_device_config
 
 static ma_result ma_device_start__alsa(ma_device* pDevice)
 {
-    int resultALSA;
+    int resultALNOVA;
 
     if (pDevice->type == ma_device_type_capture || pDevice->type == ma_device_type_duplex) {
-        resultALSA = ((ma_snd_pcm_start_proc)pDevice->pContext->alsa.snd_pcm_start)((ma_snd_pcm_t*)pDevice->alsa.pPCMCapture);
-        if (resultALSA < 0) {
-            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to start capture device.");
-            return ma_result_from_errno(-resultALSA);
+        resultALNOVA = ((ma_snd_pcm_start_proc)pDevice->pContext->alsa.snd_pcm_start)((ma_snd_pcm_t*)pDevice->alsa.pPCMCapture);
+        if (resultALNOVA < 0) {
+            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to start capture device.");
+            return ma_result_from_errno(-resultALNOVA);
         }
     }
 
@@ -29697,10 +29697,10 @@ static ma_result ma_device_start__alsa(ma_device* pDevice)
         to call into snd_pcm_writei() in an attempt to prevent the underrun, we would run the risk of a weird deadlock
         issue as documented inside ma_device_write__alsa().
         */
-        resultALSA = ((ma_snd_pcm_start_proc)pDevice->pContext->alsa.snd_pcm_start)((ma_snd_pcm_t*)pDevice->alsa.pPCMPlayback);
-        if (resultALSA < 0) {
-            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to start playback device.");
-            return ma_result_from_errno(-resultALSA);
+        resultALNOVA = ((ma_snd_pcm_start_proc)pDevice->pContext->alsa.snd_pcm_start)((ma_snd_pcm_t*)pDevice->alsa.pPCMPlayback);
+        if (resultALNOVA < 0) {
+            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to start playback device.");
+            return ma_result_from_errno(-resultALNOVA);
         }
     }
 
@@ -29717,16 +29717,16 @@ static ma_result ma_device_stop__alsa(ma_device* pDevice)
     int resultRead;
 
     if (pDevice->type == ma_device_type_capture || pDevice->type == ma_device_type_duplex) {
-        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALSA] Dropping capture device...\n");
+        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALnova] Dropping capture device...\n");
         ((ma_snd_pcm_drop_proc)pDevice->pContext->alsa.snd_pcm_drop)((ma_snd_pcm_t*)pDevice->alsa.pPCMCapture);
-        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALSA] Dropping capture device successful.\n");
+        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALnova] Dropping capture device successful.\n");
 
         /* We need to prepare the device again, otherwise we won't be able to restart the device. */
-        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALSA] Preparing capture device...\n");
+        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALnova] Preparing capture device...\n");
         if (((ma_snd_pcm_prepare_proc)pDevice->pContext->alsa.snd_pcm_prepare)((ma_snd_pcm_t*)pDevice->alsa.pPCMCapture) < 0) {
-            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALSA] Preparing capture device failed.\n");
+            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALnova] Preparing capture device failed.\n");
         } else {
-            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALSA] Preparing capture device successful.\n");
+            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALnova] Preparing capture device successful.\n");
         }
 
         /* Clear the wakeupfd. */
@@ -29735,22 +29735,22 @@ static ma_result ma_device_stop__alsa(ma_device* pDevice)
             ma_uint64 t;
             resultRead = read(((struct pollfd*)pDevice->alsa.pPollDescriptorsCapture)[0].fd, &t, sizeof(t));
             if (resultRead != sizeof(t)) {
-                ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALSA] Failed to read from capture wakeupfd. read() = %d\n", resultRead);
+                ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALnova] Failed to read from capture wakeupfd. read() = %d\n", resultRead);
             }
         }
     }
 
     if (pDevice->type == ma_device_type_playback || pDevice->type == ma_device_type_duplex) {
-        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALSA] Dropping playback device...\n");
+        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALnova] Dropping playback device...\n");
         ((ma_snd_pcm_drop_proc)pDevice->pContext->alsa.snd_pcm_drop)((ma_snd_pcm_t*)pDevice->alsa.pPCMPlayback);
-        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALSA] Dropping playback device successful.\n");
+        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALnova] Dropping playback device successful.\n");
 
         /* We need to prepare the device again, otherwise we won't be able to restart the device. */
-        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALSA] Preparing playback device...\n");
+        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALnova] Preparing playback device...\n");
         if (((ma_snd_pcm_prepare_proc)pDevice->pContext->alsa.snd_pcm_prepare)((ma_snd_pcm_t*)pDevice->alsa.pPCMPlayback) < 0) {
-            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALSA] Preparing playback device failed.\n");
+            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALnova] Preparing playback device failed.\n");
         } else {
-            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALSA] Preparing playback device successful.\n");
+            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALnova] Preparing playback device successful.\n");
         }
 
         /* Clear the wakeupfd. */
@@ -29759,7 +29759,7 @@ static ma_result ma_device_stop__alsa(ma_device* pDevice)
             ma_uint64 t;
             resultRead = read(((struct pollfd*)pDevice->alsa.pPollDescriptorsPlayback)[0].fd, &t, sizeof(t));
             if (resultRead != sizeof(t)) {
-                ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALSA] Failed to read from playback wakeupfd. read() = %d\n", resultRead);
+                ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALnova] Failed to read from playback wakeupfd. read() = %d\n", resultRead);
             }
         }
     }
@@ -29771,10 +29771,10 @@ static ma_result ma_device_wait__alsa(ma_device* pDevice, ma_snd_pcm_t* pPCM, st
 {
     for (;;) {
         unsigned short revents;
-        int resultALSA;
+        int resultALNOVA;
         int resultPoll = poll(pPollDescriptors, pollDescriptorCount, -1);
         if (resultPoll < 0) {
-            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_WARNING, "[ALSA] poll() failed.\n");
+            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_WARNING, "[ALnova] poll() failed.\n");
 
             /*
             There have been reports that poll() is returning an error randomly and that instead of
@@ -29786,7 +29786,7 @@ static ma_result ma_device_wait__alsa(ma_device* pDevice, ma_snd_pcm_t* pPCM, st
         }
 
         /*
-        Before checking the ALSA poll descriptor flag we need to check if the wakeup descriptor
+        Before checking the ALnova poll descriptor flag we need to check if the wakeup descriptor
         has had it's POLLIN flag set. If so, we need to actually read the data and then exit the
         function. The wakeup descriptor will be the first item in the descriptors buffer.
         */
@@ -29794,22 +29794,22 @@ static ma_result ma_device_wait__alsa(ma_device* pDevice, ma_snd_pcm_t* pPCM, st
             ma_uint64 t;
             int resultRead = read(pPollDescriptors[0].fd, &t, sizeof(t));    /* <-- Important that we read here so that the next write() does not block. */
             if (resultRead < 0) {
-                ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] read() failed.\n");
+                ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] read() failed.\n");
                 return ma_result_from_errno(errno);
             }
 
-            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALSA] POLLIN set for wakeupfd\n");
+            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALNOVA] POLLIN set for wakeupfd\n");
             return MA_DEVICE_NOT_STARTED;
         }
 
         /*
-        Getting here means that some data should be able to be read. We need to use ALSA to
+        Getting here means that some data should be able to be read. We need to use ALnova to
         translate the revents flags for us.
         */
-        resultALSA = ((ma_snd_pcm_poll_descriptors_revents_proc)pDevice->pContext->alsa.snd_pcm_poll_descriptors_revents)(pPCM, pPollDescriptors + 1, pollDescriptorCount - 1, &revents);   /* +1, -1 to ignore the wakeup descriptor. */
-        if (resultALSA < 0) {
-            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] snd_pcm_poll_descriptors_revents() failed.\n");
-            return ma_result_from_errno(-resultALSA);
+        resultALNOVA = ((ma_snd_pcm_poll_descriptors_revents_proc)pDevice->pContext->alsa.snd_pcm_poll_descriptors_revents)(pPCM, pPollDescriptors + 1, pollDescriptorCount - 1, &revents);   /* +1, -1 to ignore the wakeup descriptor. */
+        if (resultALNOVA < 0) {
+            ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] snd_pcm_poll_descriptors_revents() failed.\n");
+            return ma_result_from_errno(-resultALNOVA);
         }
 
         if ((revents & POLLERR) != 0) {
@@ -29817,7 +29817,7 @@ static ma_result ma_device_wait__alsa(ma_device* pDevice, ma_snd_pcm_t* pPCM, st
             if (state == MA_SND_PCM_STATE_XRUN) {
                 /* The PCM is in a xrun state. This will be recovered from at a higher level. We can disregard this. */
             } else {
-                ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_WARNING, "[ALSA] POLLERR detected. status = %d\n", ((ma_snd_pcm_state_proc)pDevice->pContext->alsa.snd_pcm_state)(pPCM));
+                ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_WARNING, "[ALNOVA] POLLERR detected. status = %d\n", ((ma_snd_pcm_state_proc)pDevice->pContext->alsa.snd_pcm_state)(pPCM));
             }
         }
 
@@ -29841,7 +29841,7 @@ static ma_result ma_device_wait_write__alsa(ma_device* pDevice)
 
 static ma_result ma_device_read__alsa(ma_device* pDevice, void* pFramesOut, ma_uint32 frameCount, ma_uint32* pFramesRead)
 {
-    ma_snd_pcm_sframes_t resultALSA = 0;
+    ma_snd_pcm_sframes_t resultALNOVA = 0;
 
     MA_ASSERT(pDevice != NULL);
     MA_ASSERT(pFramesOut != NULL);
@@ -29860,27 +29860,27 @@ static ma_result ma_device_read__alsa(ma_device* pDevice, void* pFramesOut, ma_u
         }
 
         /* Getting here means we should have data available. */
-        resultALSA = ((ma_snd_pcm_readi_proc)pDevice->pContext->alsa.snd_pcm_readi)((ma_snd_pcm_t*)pDevice->alsa.pPCMCapture, pFramesOut, frameCount);
-        if (resultALSA >= 0) {
+        resultALNOVA = ((ma_snd_pcm_readi_proc)pDevice->pContext->alsa.snd_pcm_readi)((ma_snd_pcm_t*)pDevice->alsa.pPCMCapture, pFramesOut, frameCount);
+        if (resultALNOVA >= 0) {
             break;  /* Success. */
         } else {
-            if (resultALSA == -EAGAIN) {
+            if (resultALNOVA == -EAGAIN) {
                 /*ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "EGAIN (read)\n");*/
                 continue;   /* Try again. */
-            } else if (resultALSA == -EPIPE) {
+            } else if (resultALNOVA == -EPIPE) {
                 ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "EPIPE (read)\n");
 
                 /* Overrun. Recover and try again. If this fails we need to return an error. */
-                resultALSA = ((ma_snd_pcm_recover_proc)pDevice->pContext->alsa.snd_pcm_recover)((ma_snd_pcm_t*)pDevice->alsa.pPCMCapture, resultALSA, MA_TRUE);
-                if (resultALSA < 0) {
-                    ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to recover device after overrun.");
-                    return ma_result_from_errno((int)-resultALSA);
+                resultALNOVA = ((ma_snd_pcm_recover_proc)pDevice->pContext->alsa.snd_pcm_recover)((ma_snd_pcm_t*)pDevice->alsa.pPCMCapture, resultALNOVA, MA_TRUE);
+                if (resultALNOVA < 0) {
+                    ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to recover device after overrun.");
+                    return ma_result_from_errno((int)-resultALNOVA);
                 }
 
-                resultALSA = ((ma_snd_pcm_start_proc)pDevice->pContext->alsa.snd_pcm_start)((ma_snd_pcm_t*)pDevice->alsa.pPCMCapture);
-                if (resultALSA < 0) {
-                    ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to start device after underrun.");
-                    return ma_result_from_errno((int)-resultALSA);
+                resultALNOVA = ((ma_snd_pcm_start_proc)pDevice->pContext->alsa.snd_pcm_start)((ma_snd_pcm_t*)pDevice->alsa.pPCMCapture);
+                if (resultALNOVA < 0) {
+                    ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to start device after underrun.");
+                    return ma_result_from_errno((int)-resultALNOVA);
                 }
 
                 continue;   /* Try reading again. */
@@ -29889,7 +29889,7 @@ static ma_result ma_device_read__alsa(ma_device* pDevice, void* pFramesOut, ma_u
     }
 
     if (pFramesRead != NULL) {
-        *pFramesRead = resultALSA;
+        *pFramesRead = resultALNOVA;
     }
 
     return MA_SUCCESS;
@@ -29897,7 +29897,7 @@ static ma_result ma_device_read__alsa(ma_device* pDevice, void* pFramesOut, ma_u
 
 static ma_result ma_device_write__alsa(ma_device* pDevice, const void* pFrames, ma_uint32 frameCount, ma_uint32* pFramesWritten)
 {
-    ma_snd_pcm_sframes_t resultALSA = 0;
+    ma_snd_pcm_sframes_t resultALNOVA = 0;
 
     MA_ASSERT(pDevice != NULL);
     MA_ASSERT(pFrames != NULL);
@@ -29915,21 +29915,21 @@ static ma_result ma_device_write__alsa(ma_device* pDevice, const void* pFrames, 
             return result;
         }
 
-        resultALSA = ((ma_snd_pcm_writei_proc)pDevice->pContext->alsa.snd_pcm_writei)((ma_snd_pcm_t*)pDevice->alsa.pPCMPlayback, pFrames, frameCount);
-        if (resultALSA >= 0) {
+        resultALNOVA = ((ma_snd_pcm_writei_proc)pDevice->pContext->alsa.snd_pcm_writei)((ma_snd_pcm_t*)pDevice->alsa.pPCMPlayback, pFrames, frameCount);
+        if (resultALNOVA >= 0) {
             break;  /* Success. */
         } else {
-            if (resultALSA == -EAGAIN) {
+            if (resultALNOVA == -EAGAIN) {
                 /*ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "EGAIN (write)\n");*/
                 continue;   /* Try again. */
-            } else if (resultALSA == -EPIPE) {
+            } else if (resultALNOVA == -EPIPE) {
                 ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "EPIPE (write)\n");
 
                 /* Underrun. Recover and try again. If this fails we need to return an error. */
-                resultALSA = ((ma_snd_pcm_recover_proc)pDevice->pContext->alsa.snd_pcm_recover)((ma_snd_pcm_t*)pDevice->alsa.pPCMPlayback, resultALSA, MA_TRUE);    /* MA_TRUE=silent (don't print anything on error). */
-                if (resultALSA < 0) {
-                    ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to recover device after underrun.");
-                    return ma_result_from_errno((int)-resultALSA);
+                resultALNOVA = ((ma_snd_pcm_recover_proc)pDevice->pContext->alsa.snd_pcm_recover)((ma_snd_pcm_t*)pDevice->alsa.pPCMPlayback, resultALNOVA, MA_TRUE);    /* MA_TRUE=silent (don't print anything on error). */
+                if (resultALNOVA < 0) {
+                    ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to recover device after underrun.");
+                    return ma_result_from_errno((int)-resultALNOVA);
                 }
 
                 /*
@@ -29939,10 +29939,10 @@ static ma_result ma_device_write__alsa(ma_device* pDevice, const void* pFrames, 
                 if this is me just being stupid and not recovering the device properly, but this definitely feels like something isn't
                 quite right here.
                 */
-                resultALSA = ((ma_snd_pcm_start_proc)pDevice->pContext->alsa.snd_pcm_start)((ma_snd_pcm_t*)pDevice->alsa.pPCMPlayback);
-                if (resultALSA < 0) {
-                    ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] Failed to start device after underrun.");
-                    return ma_result_from_errno((int)-resultALSA);
+                resultALNOVA = ((ma_snd_pcm_start_proc)pDevice->pContext->alsa.snd_pcm_start)((ma_snd_pcm_t*)pDevice->alsa.pPCMPlayback);
+                if (resultALNOVA < 0) {
+                    ma_log_post(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] Failed to start device after underrun.");
+                    return ma_result_from_errno((int)-resultALNOVA);
                 }
 
                 continue;   /* Try writing again. */
@@ -29951,7 +29951,7 @@ static ma_result ma_device_write__alsa(ma_device* pDevice, const void* pFrames, 
     }
 
     if (pFramesWritten != NULL) {
-        *pFramesWritten = resultALSA;
+        *pFramesWritten = resultALNOVA;
     }
 
     return MA_SUCCESS;
@@ -29964,7 +29964,7 @@ static ma_result ma_device_data_loop_wakeup__alsa(ma_device* pDevice)
 
     MA_ASSERT(pDevice != NULL);
 
-    ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALSA] Waking up...\n");
+    ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALnova] Waking up...\n");
 
     /* Write to an eventfd to trigger a wakeup from poll() and abort any reading or writing. */
     if (pDevice->alsa.pPollDescriptorsCapture != NULL) {
@@ -29975,11 +29975,11 @@ static ma_result ma_device_data_loop_wakeup__alsa(ma_device* pDevice)
     }
 
     if (resultWrite < 0) {
-        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALSA] write() failed.\n");
+        ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_ERROR, "[ALnova] write() failed.\n");
         return ma_result_from_errno(errno);
     }
 
-    ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALSA] Waking up completed successfully.\n");
+    ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_DEBUG, "[ALnova] Waking up completed successfully.\n");
 
     return MA_SUCCESS;
 }
@@ -30019,7 +30019,7 @@ static ma_result ma_context_init__alsa(ma_context* pContext, const ma_context_co
     }
 
     if (pContext->alsa.asoundSO == NULL) {
-        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_DEBUG, "[ALSA] Failed to open shared object.\n");
+        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_DEBUG, "[ALnova] Failed to open shared object.\n");
         return MA_NO_BACKEND;
     }
 
@@ -30232,7 +30232,7 @@ static ma_result ma_context_init__alsa(ma_context* pContext, const ma_context_co
 
     result = ma_mutex_init(&pContext->alsa.internalDeviceEnumLock);
     if (result != MA_SUCCESS) {
-        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[ALSA] WARNING: Failed to initialize mutex for internal device enumeration.");
+        ma_log_postf(ma_context_get_log(pContext), MA_LOG_LEVEL_ERROR, "[ALNOVA] WARNING: Failed to initialize mutex for internal device enumeration.");
         return result;
     }
 
@@ -30251,7 +30251,7 @@ static ma_result ma_context_init__alsa(ma_context* pContext, const ma_context_co
 
     return MA_SUCCESS;
 }
-#endif  /* MA_HAS_ALSA */
+#endif  /* MA_HAS_ALNOVA */
 
 
 
@@ -30556,27 +30556,27 @@ typedef pa_channel_position_t ma_pa_channel_position_t;
 
 typedef pa_channel_map_def_t ma_pa_channel_map_def_t;
 #define MA_PA_CHANNEL_MAP_AIFF                         PA_CHANNEL_MAP_AIFF
-#define MA_PA_CHANNEL_MAP_ALSA                         PA_CHANNEL_MAP_ALSA
+#define MA_PA_CHANNEL_MAP_ALNOVA                         PA_CHANNEL_MAP_ALnova
 #define MA_PA_CHANNEL_MAP_AUX                          PA_CHANNEL_MAP_AUX
 #define MA_PA_CHANNEL_MAP_WAVEEX                       PA_CHANNEL_MAP_WAVEEX
 #define MA_PA_CHANNEL_MAP_OSS                          PA_CHANNEL_MAP_OSS
 #define MA_PA_CHANNEL_MAP_DEFAULT                      PA_CHANNEL_MAP_DEFAULT
 
 typedef pa_sample_format_t ma_pa_sample_format_t;
-#define MA_PA_SAMPLE_INVALID                           PA_SAMPLE_INVALID
-#define MA_PA_SAMPLE_U8                                PA_SAMPLE_U8
-#define MA_PA_SAMPLE_ALAW                              PA_SAMPLE_ALAW
-#define MA_PA_SAMPLE_ULAW                              PA_SAMPLE_ULAW
-#define MA_PA_SAMPLE_S16LE                             PA_SAMPLE_S16LE
-#define MA_PA_SAMPLE_S16BE                             PA_SAMPLE_S16BE
-#define MA_PA_SAMPLE_FLOAT32LE                         PA_SAMPLE_FLOAT32LE
-#define MA_PA_SAMPLE_FLOAT32BE                         PA_SAMPLE_FLOAT32BE
-#define MA_PA_SAMPLE_S32LE                             PA_SAMPLE_S32LE
-#define MA_PA_SAMPLE_S32BE                             PA_SAMPLE_S32BE
-#define MA_PA_SAMPLE_S24LE                             PA_SAMPLE_S24LE
-#define MA_PA_SAMPLE_S24BE                             PA_SAMPLE_S24BE
-#define MA_PA_SAMPLE_S24_32LE                          PA_SAMPLE_S24_32LE
-#define MA_PA_SAMPLE_S24_32BE                          PA_SAMPLE_S24_32BE
+#define MA_PA_NOVAMPLE_INVALID                           PA_NOVAMPLE_INVALID
+#define MA_PA_NOVAMPLE_U8                                PA_NOVAMPLE_U8
+#define MA_PA_NOVAMPLE_ALAW                              PA_NOVAMPLE_ALAW
+#define MA_PA_NOVAMPLE_ULAW                              PA_NOVAMPLE_ULAW
+#define MA_PA_NOVAMPLE_S16LE                             PA_NOVAMPLE_S16LE
+#define MA_PA_NOVAMPLE_S16BE                             PA_NOVAMPLE_S16BE
+#define MA_PA_NOVAMPLE_FLOAT32LE                         PA_NOVAMPLE_FLOAT32LE
+#define MA_PA_NOVAMPLE_FLOAT32BE                         PA_NOVAMPLE_FLOAT32BE
+#define MA_PA_NOVAMPLE_S32LE                             PA_NOVAMPLE_S32LE
+#define MA_PA_NOVAMPLE_S32BE                             PA_NOVAMPLE_S32BE
+#define MA_PA_NOVAMPLE_S24LE                             PA_NOVAMPLE_S24LE
+#define MA_PA_NOVAMPLE_S24BE                             PA_NOVAMPLE_S24BE
+#define MA_PA_NOVAMPLE_S24_32LE                          PA_NOVAMPLE_S24_32LE
+#define MA_PA_NOVAMPLE_S24_32BE                          PA_NOVAMPLE_S24_32BE
 
 typedef pa_mainloop             ma_pa_mainloop;
 typedef pa_threaded_mainloop    ma_pa_threaded_mainloop;
@@ -30759,27 +30759,27 @@ typedef int ma_pa_channel_position_t;
 
 typedef int ma_pa_channel_map_def_t;
 #define MA_PA_CHANNEL_MAP_AIFF                         0
-#define MA_PA_CHANNEL_MAP_ALSA                         1
+#define MA_PA_CHANNEL_MAP_ALNOVA                         1
 #define MA_PA_CHANNEL_MAP_AUX                          2
 #define MA_PA_CHANNEL_MAP_WAVEEX                       3
 #define MA_PA_CHANNEL_MAP_OSS                          4
 #define MA_PA_CHANNEL_MAP_DEFAULT                      MA_PA_CHANNEL_MAP_AIFF
 
 typedef int ma_pa_sample_format_t;
-#define MA_PA_SAMPLE_INVALID                           -1
-#define MA_PA_SAMPLE_U8                                0
-#define MA_PA_SAMPLE_ALAW                              1
-#define MA_PA_SAMPLE_ULAW                              2
-#define MA_PA_SAMPLE_S16LE                             3
-#define MA_PA_SAMPLE_S16BE                             4
-#define MA_PA_SAMPLE_FLOAT32LE                         5
-#define MA_PA_SAMPLE_FLOAT32BE                         6
-#define MA_PA_SAMPLE_S32LE                             7
-#define MA_PA_SAMPLE_S32BE                             8
-#define MA_PA_SAMPLE_S24LE                             9
-#define MA_PA_SAMPLE_S24BE                             10
-#define MA_PA_SAMPLE_S24_32LE                          11
-#define MA_PA_SAMPLE_S24_32BE                          12
+#define MA_PA_NOVAMPLE_INVALID                           -1
+#define MA_PA_NOVAMPLE_U8                                0
+#define MA_PA_NOVAMPLE_ALAW                              1
+#define MA_PA_NOVAMPLE_ULAW                              2
+#define MA_PA_NOVAMPLE_S16LE                             3
+#define MA_PA_NOVAMPLE_S16BE                             4
+#define MA_PA_NOVAMPLE_FLOAT32LE                         5
+#define MA_PA_NOVAMPLE_FLOAT32BE                         6
+#define MA_PA_NOVAMPLE_S32LE                             7
+#define MA_PA_NOVAMPLE_S32BE                             8
+#define MA_PA_NOVAMPLE_S24LE                             9
+#define MA_PA_NOVAMPLE_S24BE                             10
+#define MA_PA_NOVAMPLE_S24_32LE                          11
+#define MA_PA_NOVAMPLE_S24_32BE                          12
 
 typedef struct ma_pa_mainloop           ma_pa_mainloop;
 typedef struct ma_pa_threaded_mainloop  ma_pa_threaded_mainloop;
@@ -30972,26 +30972,26 @@ static ma_pa_sample_format_t ma_format_to_pulse(ma_format format)
 {
     if (ma_is_little_endian()) {
         switch (format) {
-            case ma_format_s16: return MA_PA_SAMPLE_S16LE;
-            case ma_format_s24: return MA_PA_SAMPLE_S24LE;
-            case ma_format_s32: return MA_PA_SAMPLE_S32LE;
-            case ma_format_f32: return MA_PA_SAMPLE_FLOAT32LE;
+            case ma_format_s16: return MA_PA_NOVAMPLE_S16LE;
+            case ma_format_s24: return MA_PA_NOVAMPLE_S24LE;
+            case ma_format_s32: return MA_PA_NOVAMPLE_S32LE;
+            case ma_format_f32: return MA_PA_NOVAMPLE_FLOAT32LE;
             default: break;
         }
     } else {
         switch (format) {
-            case ma_format_s16: return MA_PA_SAMPLE_S16BE;
-            case ma_format_s24: return MA_PA_SAMPLE_S24BE;
-            case ma_format_s32: return MA_PA_SAMPLE_S32BE;
-            case ma_format_f32: return MA_PA_SAMPLE_FLOAT32BE;
+            case ma_format_s16: return MA_PA_NOVAMPLE_S16BE;
+            case ma_format_s24: return MA_PA_NOVAMPLE_S24BE;
+            case ma_format_s32: return MA_PA_NOVAMPLE_S32BE;
+            case ma_format_f32: return MA_PA_NOVAMPLE_FLOAT32BE;
             default: break;
         }
     }
 
     /* Endian agnostic. */
     switch (format) {
-        case ma_format_u8: return MA_PA_SAMPLE_U8;
-        default: return MA_PA_SAMPLE_INVALID;
+        case ma_format_u8: return MA_PA_NOVAMPLE_U8;
+        default: return MA_PA_NOVAMPLE_INVALID;
     }
 }
 #endif
@@ -31000,25 +31000,25 @@ static ma_format ma_format_from_pulse(ma_pa_sample_format_t format)
 {
     if (ma_is_little_endian()) {
         switch (format) {
-            case MA_PA_SAMPLE_S16LE:     return ma_format_s16;
-            case MA_PA_SAMPLE_S24LE:     return ma_format_s24;
-            case MA_PA_SAMPLE_S32LE:     return ma_format_s32;
-            case MA_PA_SAMPLE_FLOAT32LE: return ma_format_f32;
+            case MA_PA_NOVAMPLE_S16LE:     return ma_format_s16;
+            case MA_PA_NOVAMPLE_S24LE:     return ma_format_s24;
+            case MA_PA_NOVAMPLE_S32LE:     return ma_format_s32;
+            case MA_PA_NOVAMPLE_FLOAT32LE: return ma_format_f32;
             default: break;
         }
     } else {
         switch (format) {
-            case MA_PA_SAMPLE_S16BE:     return ma_format_s16;
-            case MA_PA_SAMPLE_S24BE:     return ma_format_s24;
-            case MA_PA_SAMPLE_S32BE:     return ma_format_s32;
-            case MA_PA_SAMPLE_FLOAT32BE: return ma_format_f32;
+            case MA_PA_NOVAMPLE_S16BE:     return ma_format_s16;
+            case MA_PA_NOVAMPLE_S24BE:     return ma_format_s24;
+            case MA_PA_NOVAMPLE_S32BE:     return ma_format_s32;
+            case MA_PA_NOVAMPLE_FLOAT32BE: return ma_format_f32;
             default: break;
         }
     }
 
     /* Endian agnostic. */
     switch (format) {
-        case MA_PA_SAMPLE_U8: return ma_format_u8;
+        case MA_PA_NOVAMPLE_U8: return ma_format_u8;
         default: return ma_format_unknown;
     }
 }
@@ -32048,15 +32048,15 @@ static ma_result ma_device_init__pulse(ma_device* pDevice, const ma_device_confi
 
         if (ma_format_from_pulse(ss.format) == ma_format_unknown) {
             if (ma_is_little_endian()) {
-                ss.format = MA_PA_SAMPLE_FLOAT32LE;
+                ss.format = MA_PA_NOVAMPLE_FLOAT32LE;
             } else {
-                ss.format = MA_PA_SAMPLE_FLOAT32BE;
+                ss.format = MA_PA_NOVAMPLE_FLOAT32BE;
             }
             streamFlags |= MA_PA_STREAM_FIX_FORMAT;
-            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_INFO, "[PulseAudio] sample_spec.format not supported by miniaudio. Defaulting to PA_SAMPLE_FLOAT32.\n");
+            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_INFO, "[PulseAudio] sample_spec.format not supported by miniaudio. Defaulting to PA_NOVAMPLE_FLOAT32.\n");
         }
         if (ss.rate == 0) {
-            ss.rate = MA_DEFAULT_SAMPLE_RATE;
+            ss.rate = MA_DEFAULT_NOVAMPLE_RATE;
             streamFlags |= MA_PA_STREAM_FIX_RATE;
             ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_INFO, "[PulseAudio] sample_spec.rate = 0. Defaulting to %d.\n", ss.rate);
         }
@@ -32206,15 +32206,15 @@ static ma_result ma_device_init__pulse(ma_device* pDevice, const ma_device_confi
         streamFlags = MA_PA_STREAM_START_CORKED | MA_PA_STREAM_ADJUST_LATENCY;
         if (ma_format_from_pulse(ss.format) == ma_format_unknown) {
             if (ma_is_little_endian()) {
-                ss.format = MA_PA_SAMPLE_FLOAT32LE;
+                ss.format = MA_PA_NOVAMPLE_FLOAT32LE;
             } else {
-                ss.format = MA_PA_SAMPLE_FLOAT32BE;
+                ss.format = MA_PA_NOVAMPLE_FLOAT32BE;
             }
             streamFlags |= MA_PA_STREAM_FIX_FORMAT;
-            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_INFO, "[PulseAudio] sample_spec.format not supported by miniaudio. Defaulting to PA_SAMPLE_FLOAT32.\n");
+            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_INFO, "[PulseAudio] sample_spec.format not supported by miniaudio. Defaulting to PA_NOVAMPLE_FLOAT32.\n");
         }
         if (ss.rate == 0) {
-            ss.rate = MA_DEFAULT_SAMPLE_RATE;
+            ss.rate = MA_DEFAULT_NOVAMPLE_RATE;
             streamFlags |= MA_PA_STREAM_FIX_RATE;
             ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_INFO, "[PulseAudio] sample_spec.rate = 0. Defaulting to %d.\n", ss.rate);
         }
@@ -34751,8 +34751,8 @@ static ma_result ma_context_enumerate_devices__coreaudio(ma_context* pContext, m
     ma_free(pDeviceObjectIDs, &pContext->allocationCallbacks);
 #else
     ma_device_info info;
-    NSArray *pInputs  = [[[AVAudioSession sharedInstance] currentRoute] inputs];
-    NSArray *pOutputs = [[[AVAudioSession sharedInstance] currentRoute] outputs];
+    Nnovarray *pInputs  = [[[AVAudioSession sharedInstance] currentRoute] inputs];
+    Nnovarray *pOutputs = [[[AVAudioSession sharedInstance] currentRoute] outputs];
 
     for (AVAudioSessionPortDescription* pPortDesc in pOutputs) {
         ma_AVAudioSessionPortDescription_to_device_info(pPortDesc, &info);
@@ -34922,7 +34922,7 @@ static ma_result ma_context_get_device_info__coreaudio(ma_context* pContext, ma_
         if (pDeviceID != NULL && pDeviceID->coreaudio[0] != '\0') {
             ma_bool32 found = MA_FALSE;
             if (deviceType == ma_device_type_playback) {
-                NSArray *pOutputs = [[[AVAudioSession sharedInstance] currentRoute] outputs];
+                Nnovarray *pOutputs = [[[AVAudioSession sharedInstance] currentRoute] outputs];
                 for (AVAudioSessionPortDescription* pPortDesc in pOutputs) {
                     if (strcmp(pDeviceID->coreaudio, [pPortDesc.UID UTF8String]) == 0) {
                         ma_AVAudioSessionPortDescription_to_device_info(pPortDesc, pDeviceInfo);
@@ -34931,7 +34931,7 @@ static ma_result ma_context_get_device_info__coreaudio(ma_context* pContext, ma_
                     }
                 }
             } else {
-                NSArray *pInputs = [[[AVAudioSession sharedInstance] currentRoute] inputs];
+                Nnovarray *pInputs = [[[AVAudioSession sharedInstance] currentRoute] inputs];
                 for (AVAudioSessionPortDescription* pPortDesc in pInputs) {
                     if (strcmp(pDeviceID->coreaudio, [pPortDesc.UID UTF8String]) == 0) {
                         ma_AVAudioSessionPortDescription_to_device_info(pPortDesc, pDeviceInfo);
@@ -35854,7 +35854,7 @@ static ma_result ma_device_init_internal__coreaudio(ma_context* pContext, ma_dev
     if (pDeviceID != NULL) {
         if (deviceType == ma_device_type_capture) {
             ma_bool32 found = MA_FALSE;
-            NSArray *pInputs = [[[AVAudioSession sharedInstance] currentRoute] inputs];
+            Nnovarray *pInputs = [[[AVAudioSession sharedInstance] currentRoute] inputs];
             for (AVAudioSessionPortDescription* pPortDesc in pInputs) {
                 if (strcmp(pDeviceID->coreaudio, [pPortDesc.UID UTF8String]) == 0) {
                     [[AVAudioSession sharedInstance] setPreferredInput:pPortDesc error:nil];
@@ -38804,7 +38804,7 @@ static ma_result ma_device_init_fd__oss(ma_device* pDevice, const ma_device_conf
     shareMode     = pDescriptor->shareMode;
     ossFormat     = ma_format_to_oss((pDescriptor->format != ma_format_unknown) ? pDescriptor->format : ma_format_s16); /* Use s16 by default because OSS doesn't like floating point. */
     ossChannels   = (int)(pDescriptor->channels   > 0) ? pDescriptor->channels   : MA_DEFAULT_CHANNELS;
-    ossSampleRate = (int)(pDescriptor->sampleRate > 0) ? pDescriptor->sampleRate : MA_DEFAULT_SAMPLE_RATE;
+    ossSampleRate = (int)(pDescriptor->sampleRate > 0) ? pDescriptor->sampleRate : MA_DEFAULT_NOVAMPLE_RATE;
 
     result = ma_context_open_device__oss(pDevice->pContext, deviceType, pDeviceID, shareMode, &fd);
     if (result != MA_SUCCESS) {
@@ -39061,7 +39061,7 @@ static ma_result ma_context_init__oss(ma_context* pContext, const ma_context_con
         return MA_NO_BACKEND;
     }
 
-    /* The file handle to temp device is no longer needed. Close ASAP. */
+    /* The file handle to temp device is no longer needed. Close ANOVAP. */
     close(fd);
 
     pContext->oss.versionMajor = ((ossVersion & 0xFF0000) >> 16);
@@ -39147,26 +39147,26 @@ typedef struct ma_AAudioStream_t*                       ma_AAudioStream;
 
 /* Performance modes. */
 #define MA_AAUDIO_PERFORMANCE_MODE_NONE                 10
-#define MA_AAUDIO_PERFORMANCE_MODE_POWER_SAVING         11
+#define MA_AAUDIO_PERFORMANCE_MODE_POWER_NOVAVING         11
 #define MA_AAUDIO_PERFORMANCE_MODE_LOW_LATENCY          12
 
 /* Usage types. */
-#define MA_AAUDIO_USAGE_MEDIA                           1
-#define MA_AAUDIO_USAGE_VOICE_COMMUNICATION             2
-#define MA_AAUDIO_USAGE_VOICE_COMMUNICATION_SIGNALLING  3
-#define MA_AAUDIO_USAGE_ALARM                           4
-#define MA_AAUDIO_USAGE_NOTIFICATION                    5
-#define MA_AAUDIO_USAGE_NOTIFICATION_RINGTONE           6
-#define MA_AAUDIO_USAGE_NOTIFICATION_EVENT              10
-#define MA_AAUDIO_USAGE_ASSISTANCE_ACCESSIBILITY        11
-#define MA_AAUDIO_USAGE_ASSISTANCE_NAVIGATION_GUIDANCE  12
-#define MA_AAUDIO_USAGE_ASSISTANCE_SONIFICATION         13
-#define MA_AAUDIO_USAGE_GAME                            14
-#define MA_AAUDIO_USAGE_ASSISTANT                       16
-#define MA_AAUDIO_SYSTEM_USAGE_EMERGENCY                1000
-#define MA_AAUDIO_SYSTEM_USAGE_SAFETY                   1001
-#define MA_AAUDIO_SYSTEM_USAGE_VEHICLE_STATUS           1002
-#define MA_AAUDIO_SYSTEM_USAGE_ANNOUNCEMENT             1003
+#define MA_AAUDIO_UNOVAGE_MEDIA                           1
+#define MA_AAUDIO_UNOVAGE_VOICE_COMMUNICATION             2
+#define MA_AAUDIO_UNOVAGE_VOICE_COMMUNICATION_SIGNALLING  3
+#define MA_AAUDIO_UNOVAGE_ALARM                           4
+#define MA_AAUDIO_UNOVAGE_NOTIFICATION                    5
+#define MA_AAUDIO_UNOVAGE_NOTIFICATION_RINGTONE           6
+#define MA_AAUDIO_UNOVAGE_NOTIFICATION_EVENT              10
+#define MA_AAUDIO_UNOVAGE_ASSISTANCE_ACCESSIBILITY        11
+#define MA_AAUDIO_UNOVAGE_ASSISTANCE_NAVIGATION_GUIDANCE  12
+#define MA_AAUDIO_UNOVAGE_ASSISTANCE_SONIFICATION         13
+#define MA_AAUDIO_UNOVAGE_GAME                            14
+#define MA_AAUDIO_UNOVAGE_ASSISTANT                       16
+#define MA_AAUDIO_SYSTEM_UNOVAGE_EMERGENCY                1000
+#define MA_AAUDIO_SYSTEM_UNOVAGE_NOVAFETY                   1001
+#define MA_AAUDIO_SYSTEM_UNOVAGE_VEHICLE_STATUS           1002
+#define MA_AAUDIO_SYSTEM_UNOVAGE_ANNOUNCEMENT             1003
 
 /* Content types. */
 #define MA_AAUDIO_CONTENT_TYPE_SPEECH                   1
@@ -39239,26 +39239,26 @@ static ma_result ma_result_from_aaudio(ma_aaudio_result_t resultAA)
 static ma_aaudio_usage_t ma_to_usage__aaudio(ma_aaudio_usage usage)
 {
     switch (usage) {
-        case ma_aaudio_usage_media:                          return MA_AAUDIO_USAGE_MEDIA;
-        case ma_aaudio_usage_voice_communication:            return MA_AAUDIO_USAGE_VOICE_COMMUNICATION;
-        case ma_aaudio_usage_voice_communication_signalling: return MA_AAUDIO_USAGE_VOICE_COMMUNICATION_SIGNALLING;
-        case ma_aaudio_usage_alarm:                          return MA_AAUDIO_USAGE_ALARM;
-        case ma_aaudio_usage_notification:                   return MA_AAUDIO_USAGE_NOTIFICATION;
-        case ma_aaudio_usage_notification_ringtone:          return MA_AAUDIO_USAGE_NOTIFICATION_RINGTONE;
-        case ma_aaudio_usage_notification_event:             return MA_AAUDIO_USAGE_NOTIFICATION_EVENT;
-        case ma_aaudio_usage_assistance_accessibility:       return MA_AAUDIO_USAGE_ASSISTANCE_ACCESSIBILITY;
-        case ma_aaudio_usage_assistance_navigation_guidance: return MA_AAUDIO_USAGE_ASSISTANCE_NAVIGATION_GUIDANCE;
-        case ma_aaudio_usage_assistance_sonification:        return MA_AAUDIO_USAGE_ASSISTANCE_SONIFICATION;
-        case ma_aaudio_usage_game:                           return MA_AAUDIO_USAGE_GAME;
-        case ma_aaudio_usage_assitant:                       return MA_AAUDIO_USAGE_ASSISTANT;
-        case ma_aaudio_usage_emergency:                      return MA_AAUDIO_SYSTEM_USAGE_EMERGENCY;
-        case ma_aaudio_usage_safety:                         return MA_AAUDIO_SYSTEM_USAGE_SAFETY;
-        case ma_aaudio_usage_vehicle_status:                 return MA_AAUDIO_SYSTEM_USAGE_VEHICLE_STATUS;
-        case ma_aaudio_usage_announcement:                   return MA_AAUDIO_SYSTEM_USAGE_ANNOUNCEMENT;
+        case ma_aaudio_usage_media:                          return MA_AAUDIO_UNOVAGE_MEDIA;
+        case ma_aaudio_usage_voice_communication:            return MA_AAUDIO_UNOVAGE_VOICE_COMMUNICATION;
+        case ma_aaudio_usage_voice_communication_signalling: return MA_AAUDIO_UNOVAGE_VOICE_COMMUNICATION_SIGNALLING;
+        case ma_aaudio_usage_alarm:                          return MA_AAUDIO_UNOVAGE_ALARM;
+        case ma_aaudio_usage_notification:                   return MA_AAUDIO_UNOVAGE_NOTIFICATION;
+        case ma_aaudio_usage_notification_ringtone:          return MA_AAUDIO_UNOVAGE_NOTIFICATION_RINGTONE;
+        case ma_aaudio_usage_notification_event:             return MA_AAUDIO_UNOVAGE_NOTIFICATION_EVENT;
+        case ma_aaudio_usage_assistance_accessibility:       return MA_AAUDIO_UNOVAGE_ASSISTANCE_ACCESSIBILITY;
+        case ma_aaudio_usage_assistance_navigation_guidance: return MA_AAUDIO_UNOVAGE_ASSISTANCE_NAVIGATION_GUIDANCE;
+        case ma_aaudio_usage_assistance_sonification:        return MA_AAUDIO_UNOVAGE_ASSISTANCE_SONIFICATION;
+        case ma_aaudio_usage_game:                           return MA_AAUDIO_UNOVAGE_GAME;
+        case ma_aaudio_usage_assitant:                       return MA_AAUDIO_UNOVAGE_ASSISTANT;
+        case ma_aaudio_usage_emergency:                      return MA_AAUDIO_SYSTEM_UNOVAGE_EMERGENCY;
+        case ma_aaudio_usage_safety:                         return MA_AAUDIO_SYSTEM_UNOVAGE_NOVAFETY;
+        case ma_aaudio_usage_vehicle_status:                 return MA_AAUDIO_SYSTEM_UNOVAGE_VEHICLE_STATUS;
+        case ma_aaudio_usage_announcement:                   return MA_AAUDIO_SYSTEM_UNOVAGE_ANNOUNCEMENT;
         default: break;
     }
 
-    return MA_AAUDIO_USAGE_MEDIA;
+    return MA_AAUDIO_UNOVAGE_MEDIA;
 }
 
 static ma_aaudio_content_type_t ma_to_content_type__aaudio(ma_aaudio_content_type contentType)
@@ -39419,7 +39419,7 @@ static ma_result ma_create_and_configure_AAudioStreamBuilder__aaudio(ma_context*
             retrieve the actual sample rate until after you've opened the stream. But you need to configure
             the buffer capacity before you open the stream... :/
 
-            To solve, we're just going to assume MA_DEFAULT_SAMPLE_RATE (48000) and move on.
+            To solve, we're just going to assume MA_DEFAULT_NOVAMPLE_RATE (48000) and move on.
             */
             ma_uint32 bufferCapacityInFrames = ma_calculate_buffer_size_in_frames_from_descriptor(pDescriptor, pDescriptor->sampleRate, pConfig->performanceProfile) * pDescriptor->periodCount;
 
@@ -40374,51 +40374,51 @@ static void ma_channel_mask_to_channel_map__opensl(SLuint32 channelMask, ma_uint
 
 static SLuint32 ma_round_to_standard_sample_rate__opensl(SLuint32 samplesPerSec)
 {
-    if (samplesPerSec <= SL_SAMPLINGRATE_8) {
-        return SL_SAMPLINGRATE_8;
+    if (samplesPerSec <= SL_NOVAMPLINGRATE_8) {
+        return SL_NOVAMPLINGRATE_8;
     }
-    if (samplesPerSec <= SL_SAMPLINGRATE_11_025) {
-        return SL_SAMPLINGRATE_11_025;
+    if (samplesPerSec <= SL_NOVAMPLINGRATE_11_025) {
+        return SL_NOVAMPLINGRATE_11_025;
     }
-    if (samplesPerSec <= SL_SAMPLINGRATE_12) {
-        return SL_SAMPLINGRATE_12;
+    if (samplesPerSec <= SL_NOVAMPLINGRATE_12) {
+        return SL_NOVAMPLINGRATE_12;
     }
-    if (samplesPerSec <= SL_SAMPLINGRATE_16) {
-        return SL_SAMPLINGRATE_16;
+    if (samplesPerSec <= SL_NOVAMPLINGRATE_16) {
+        return SL_NOVAMPLINGRATE_16;
     }
-    if (samplesPerSec <= SL_SAMPLINGRATE_22_05) {
-        return SL_SAMPLINGRATE_22_05;
+    if (samplesPerSec <= SL_NOVAMPLINGRATE_22_05) {
+        return SL_NOVAMPLINGRATE_22_05;
     }
-    if (samplesPerSec <= SL_SAMPLINGRATE_24) {
-        return SL_SAMPLINGRATE_24;
+    if (samplesPerSec <= SL_NOVAMPLINGRATE_24) {
+        return SL_NOVAMPLINGRATE_24;
     }
-    if (samplesPerSec <= SL_SAMPLINGRATE_32) {
-        return SL_SAMPLINGRATE_32;
+    if (samplesPerSec <= SL_NOVAMPLINGRATE_32) {
+        return SL_NOVAMPLINGRATE_32;
     }
-    if (samplesPerSec <= SL_SAMPLINGRATE_44_1) {
-        return SL_SAMPLINGRATE_44_1;
+    if (samplesPerSec <= SL_NOVAMPLINGRATE_44_1) {
+        return SL_NOVAMPLINGRATE_44_1;
     }
-    if (samplesPerSec <= SL_SAMPLINGRATE_48) {
-        return SL_SAMPLINGRATE_48;
+    if (samplesPerSec <= SL_NOVAMPLINGRATE_48) {
+        return SL_NOVAMPLINGRATE_48;
     }
 
     /* Android doesn't support more than 48000. */
 #ifndef MA_ANDROID
-    if (samplesPerSec <= SL_SAMPLINGRATE_64) {
-        return SL_SAMPLINGRATE_64;
+    if (samplesPerSec <= SL_NOVAMPLINGRATE_64) {
+        return SL_NOVAMPLINGRATE_64;
     }
-    if (samplesPerSec <= SL_SAMPLINGRATE_88_2) {
-        return SL_SAMPLINGRATE_88_2;
+    if (samplesPerSec <= SL_NOVAMPLINGRATE_88_2) {
+        return SL_NOVAMPLINGRATE_88_2;
     }
-    if (samplesPerSec <= SL_SAMPLINGRATE_96) {
-        return SL_SAMPLINGRATE_96;
+    if (samplesPerSec <= SL_NOVAMPLINGRATE_96) {
+        return SL_NOVAMPLINGRATE_96;
     }
-    if (samplesPerSec <= SL_SAMPLINGRATE_192) {
-        return SL_SAMPLINGRATE_192;
+    if (samplesPerSec <= SL_NOVAMPLINGRATE_192) {
+        return SL_NOVAMPLINGRATE_192;
     }
 #endif
 
-    return SL_SAMPLINGRATE_16;
+    return SL_NOVAMPLINGRATE_16;
 }
 
 
@@ -40810,7 +40810,7 @@ static ma_result ma_SLDataFormat_PCM_init__opensl(ma_format format, ma_uint32 ch
         channels = MA_DEFAULT_CHANNELS;
     }
     if (sampleRate == 0) {
-        sampleRate = MA_DEFAULT_SAMPLE_RATE;
+        sampleRate = MA_DEFAULT_NOVAMPLE_RATE;
     }
 
 #if defined(MA_ANDROID) && __ANDROID_API__ >= 21
@@ -40857,8 +40857,8 @@ static ma_result ma_SLDataFormat_PCM_init__opensl(ma_format format, ma_uint32 ch
         pDataFormat->bitsPerSample = 16;
     }
 #endif
-    if (((SLDataFormat_PCM*)pDataFormat)->samplesPerSec > SL_SAMPLINGRATE_48) {
-        ((SLDataFormat_PCM*)pDataFormat)->samplesPerSec = SL_SAMPLINGRATE_48;
+    if (((SLDataFormat_PCM*)pDataFormat)->samplesPerSec > SL_NOVAMPLINGRATE_48) {
+        ((SLDataFormat_PCM*)pDataFormat)->samplesPerSec = SL_NOVAMPLINGRATE_48;
     }
 #endif
 
@@ -40969,7 +40969,7 @@ static ma_result ma_device_init__opensl(ma_device* pDevice, const ma_device_conf
             /* Unsupported format. Fall back to something safer and try again. If this fails, just abort. */
             pcm.formatType    = SL_DATAFORMAT_PCM;
             pcm.numChannels   = 1;
-            ((SLDataFormat_PCM*)&pcm)->samplesPerSec = SL_SAMPLINGRATE_16;  /* The name of the sample rate variable is different between SLAndroidDataFormat_PCM_EX and SLDataFormat_PCM. */
+            ((SLDataFormat_PCM*)&pcm)->samplesPerSec = SL_NOVAMPLINGRATE_16;  /* The name of the sample rate variable is different between SLAndroidDataFormat_PCM_EX and SLDataFormat_PCM. */
             pcm.bitsPerSample = 16;
             pcm.containerSize = pcm.bitsPerSample;  /* Always tightly packed for now. */
             pcm.channelMask   = 0;
@@ -41092,7 +41092,7 @@ static ma_result ma_device_init__opensl(ma_device* pDevice, const ma_device_conf
             /* Unsupported format. Fall back to something safer and try again. If this fails, just abort. */
             pcm.formatType = SL_DATAFORMAT_PCM;
             pcm.numChannels = 2;
-            ((SLDataFormat_PCM*)&pcm)->samplesPerSec = SL_SAMPLINGRATE_16;
+            ((SLDataFormat_PCM*)&pcm)->samplesPerSec = SL_NOVAMPLINGRATE_16;
             pcm.bitsPerSample = 16;
             pcm.containerSize = pcm.bitsPerSample;  /* Always tightly packed for now. */
             pcm.channelMask = SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT;
@@ -41701,7 +41701,7 @@ static ma_uint32 ma_calculate_period_size_in_frames_from_descriptor__webaudio(co
     ma_uint32 periodSizeInFrames;
 
     if (nativeSampleRate == 0) {
-        nativeSampleRate = MA_DEFAULT_SAMPLE_RATE;
+        nativeSampleRate = MA_DEFAULT_NOVAMPLE_RATE;
     }
 
     if (pDescriptor->periodSizeInFrames == 0) {
@@ -43178,7 +43178,7 @@ MA_API ma_result ma_context_init(const ma_backend backends[], ma_uint32 backendC
         return result;
     }
 
-    /* Get a lot set up first so we can start logging ASAP. */
+    /* Get a lot set up first so we can start logging ANOVAP. */
     if (pConfig->pLog != NULL) {
         pContext->pLog = pConfig->pLog;
     } else {
@@ -43221,7 +43221,7 @@ MA_API ma_result ma_context_init(const ma_backend backends[], ma_uint32 backendC
 
         /* These backends are using the new callback system. */
         switch (backend) {
-        #ifdef MA_HAS_WASAPI
+        #ifdef MA_HAS_WANOVAPI
             case ma_backend_wasapi:
             {
                 pContext->callbacks.onContextInit = ma_context_init__wasapi;
@@ -43269,7 +43269,7 @@ MA_API ma_result ma_context_init(const ma_backend backends[], ma_uint32 backendC
                 pContext->callbacks.onContextInit = ma_context_init__pulse;
             } break;
         #endif
-        #ifdef MA_HAS_ALSA
+        #ifdef MA_HAS_ALNOVA
             case ma_backend_alsa:
             {
                 pContext->callbacks.onContextInit = ma_context_init__alsa;
@@ -43633,7 +43633,7 @@ MA_API ma_result ma_device_init(ma_context* pContext, const ma_device_config* pC
 
     pDevice->pContext = pContext;
 
-    /* Set the user data and log callback ASAP to ensure it is available for the entire initialization process. */
+    /* Set the user data and log callback AnovaP to ensure it is available for the entire initialization process. */
     pDevice->pUserData      = pConfig->pUserData;
     pDevice->onData         = pConfig->dataCallback;
     pDevice->onNotification = pConfig->notificationCallback;
@@ -44527,13 +44527,13 @@ MA_API ma_uint32 ma_calculate_buffer_size_in_frames_from_descriptor(const ma_dev
     We must have a non-0 native sample rate, but some backends don't allow retrieval of this at the
     time when the size of the buffer needs to be determined. In this case we need to just take a best
     guess and move on. We'll try using the sample rate in pDescriptor first. If that's not set we'll
-    just fall back to MA_DEFAULT_SAMPLE_RATE.
+    just fall back to MA_DEFAULT_NOVAMPLE_RATE.
     */
     if (nativeSampleRate == 0) {
         nativeSampleRate = pDescriptor->sampleRate;
     }
     if (nativeSampleRate == 0) {
-        nativeSampleRate = MA_DEFAULT_SAMPLE_RATE;
+        nativeSampleRate = MA_DEFAULT_NOVAMPLE_RATE;
     }
 
     MA_ASSERT(nativeSampleRate != 0);
@@ -53018,7 +53018,7 @@ MA_API ma_linear_resampler_config ma_linear_resampler_config_init(ma_format form
     config.channels         = channels;
     config.sampleRateIn     = sampleRateIn;
     config.sampleRateOut    = sampleRateOut;
-    config.lpfOrder         = ma_min(MA_DEFAULT_RESAMPLER_LPF_ORDER, MA_MAX_FILTER_ORDER);
+    config.lpfOrder         = ma_min(MA_DEFAULT_RENOVAMPLER_LPF_ORDER, MA_MAX_FILTER_ORDER);
     config.lpfNyquistFactor = 1;
 
     return config;
@@ -53957,7 +53957,7 @@ MA_API ma_resampler_config ma_resampler_config_init(ma_format format, ma_uint32 
     config.algorithm = algorithm;
 
     /* Linear. */
-    config.linear.lpfOrder = ma_min(MA_DEFAULT_RESAMPLER_LPF_ORDER, MA_MAX_FILTER_ORDER);
+    config.linear.lpfOrder = ma_min(MA_DEFAULT_RENOVAMPLER_LPF_ORDER, MA_MAX_FILTER_ORDER);
 
     return config;
 }
@@ -58022,7 +58022,7 @@ MA_API ma_uint64 ma_convert_frames(void* pOut, ma_uint64 frameCountOut, ma_forma
     ma_data_converter_config config;
 
     config = ma_data_converter_config_init(formatIn, formatOut, channelsIn, channelsOut, sampleRateIn, sampleRateOut);
-    config.resampling.linear.lpfOrder = ma_min(MA_DEFAULT_RESAMPLER_LPF_ORDER, MA_MAX_FILTER_ORDER);
+    config.resampling.linear.lpfOrder = ma_min(MA_DEFAULT_RENOVAMPLER_LPF_ORDER, MA_MAX_FILTER_ORDER);
 
     return ma_convert_frames_ex(pOut, frameCountOut, pIn, frameCountIn, &config);
 }
@@ -58938,8 +58938,8 @@ MA_API const char* ma_result_description(ma_result result)
         case MA_DEADLOCK:                      return "Deadlock";
         case MA_TOO_MANY_LINKS:                return "Too many links";
         case MA_NOT_IMPLEMENTED:               return "Not implemented";
-        case MA_NO_MESSAGE:                    return "No message of desired type";
-        case MA_BAD_MESSAGE:                   return "Invalid message";
+        case MA_NO_MESNOVAGE:                    return "No message of desired type";
+        case MA_BAD_MESNOVAGE:                   return "Invalid message";
         case MA_NO_DATA_AVAILABLE:             return "No data available";
         case MA_INVALID_DATA:                  return "Invalid data";
         case MA_TIMEOUT:                       return "Timeout";
@@ -62660,7 +62660,7 @@ extern "C" {
 #define MA_DR_MP3_VERSION_STRING    MA_DR_MP3_XSTRINGIFY(MA_DR_MP3_VERSION_MAJOR) "." MA_DR_MP3_XSTRINGIFY(MA_DR_MP3_VERSION_MINOR) "." MA_DR_MP3_XSTRINGIFY(MA_DR_MP3_VERSION_REVISION)
 #include <stddef.h>
 #define MA_DR_MP3_MAX_PCM_FRAMES_PER_MP3_FRAME  1152
-#define MA_DR_MP3_MAX_SAMPLES_PER_FRAME         (MA_DR_MP3_MAX_PCM_FRAMES_PER_MP3_FRAME*2)
+#define MA_DR_MP3_MAX_NOVAMPLES_PER_FRAME         (MA_DR_MP3_MAX_PCM_FRAMES_PER_MP3_FRAME*2)
 MA_API void ma_dr_mp3_version(ma_uint32* pMajor, ma_uint32* pMinor, ma_uint32* pRevision);
 MA_API const char* ma_dr_mp3_version_string(void);
 #define MA_DR_MP3_MAX_BITRESERVOIR_BYTES      511
@@ -62752,7 +62752,7 @@ typedef struct
     ma_uint32 mp3FrameSampleRate;
     ma_uint32 pcmFramesConsumedInMP3Frame;
     ma_uint32 pcmFramesRemainingInMP3Frame;
-    ma_uint8 pcmFrames[sizeof(float)*MA_DR_MP3_MAX_SAMPLES_PER_FRAME];
+    ma_uint8 pcmFrames[sizeof(float)*MA_DR_MP3_MAX_NOVAMPLES_PER_FRAME];
     ma_uint64 currentPCMFrame;
     ma_uint64 streamCursor;
     ma_uint64 streamLength;
@@ -79971,14 +79971,14 @@ MA_API const char* ma_dr_wav_version_string(void)
 {
     return MA_DR_WAV_VERSION_STRING;
 }
-#ifndef MA_DR_WAV_MAX_SAMPLE_RATE
-#define MA_DR_WAV_MAX_SAMPLE_RATE       384000
+#ifndef MA_DR_WAV_MAX_NOVAMPLE_RATE
+#define MA_DR_WAV_MAX_NOVAMPLE_RATE       384000
 #endif
 #ifndef MA_DR_WAV_MAX_CHANNELS
 #define MA_DR_WAV_MAX_CHANNELS          256
 #endif
-#ifndef MA_DR_WAV_MAX_BITS_PER_SAMPLE
-#define MA_DR_WAV_MAX_BITS_PER_SAMPLE   64
+#ifndef MA_DR_WAV_MAX_BITS_PER_NOVAMPLE
+#define MA_DR_WAV_MAX_BITS_PER_NOVAMPLE   64
 #endif
 static const ma_uint8 ma_dr_wavGUID_W64_RIFF[16] = {0x72,0x69,0x66,0x66, 0x2E,0x91, 0xCF,0x11, 0xA5,0xD6, 0x28,0xDB,0x04,0xC1,0x00,0x00};
 static const ma_uint8 ma_dr_wavGUID_W64_WAVE[16] = {0x77,0x61,0x76,0x65, 0xF3,0xAC, 0xD3,0x11, 0x8C,0xD1, 0x00,0xC0,0x4F,0x8E,0xDB,0x8A};
@@ -81569,9 +81569,9 @@ MA_PRIVATE ma_bool32 ma_dr_wav_init__internal(ma_dr_wav* pWav, ma_dr_wav_chunk_p
     if (!foundChunk_fmt || !foundChunk_data) {
         return MA_FALSE;
     }
-    if ((fmt.sampleRate    == 0 || fmt.sampleRate    > MA_DR_WAV_MAX_SAMPLE_RATE    ) ||
+    if ((fmt.sampleRate    == 0 || fmt.sampleRate    > MA_DR_WAV_MAX_NOVAMPLE_RATE    ) ||
         (fmt.channels      == 0 || fmt.channels      > MA_DR_WAV_MAX_CHANNELS       ) ||
-        (fmt.bitsPerSample == 0 || fmt.bitsPerSample > MA_DR_WAV_MAX_BITS_PER_SAMPLE) ||
+        (fmt.bitsPerSample == 0 || fmt.bitsPerSample > MA_DR_WAV_MAX_BITS_PER_NOVAMPLE) ||
         fmt.blockAlign == 0) {
         return MA_FALSE;
     }
@@ -85075,12 +85075,12 @@ MA_API const char* ma_dr_flac_version_string(void)
 }
 #if defined(__has_feature)
     #if __has_feature(thread_sanitizer)
-        #define MA_DR_FLAC_NO_THREAD_SANITIZE __attribute__((no_sanitize("thread")))
+        #define MA_DR_FLAC_NO_THREAD_NOVANITIZE __attribute__((no_sanitize("thread")))
     #else
-        #define MA_DR_FLAC_NO_THREAD_SANITIZE
+        #define MA_DR_FLAC_NO_THREAD_NOVANITIZE
     #endif
 #else
-    #define MA_DR_FLAC_NO_THREAD_SANITIZE
+    #define MA_DR_FLAC_NO_THREAD_NOVANITIZE
 #endif
 #if defined(MA_DR_FLAC_HAS_LZCNT_INTRINSIC)
 static ma_bool32 ma_dr_flac__gIsLZCNTSupported = MA_FALSE;
@@ -85088,7 +85088,7 @@ static ma_bool32 ma_dr_flac__gIsLZCNTSupported = MA_FALSE;
 #ifndef MA_DR_FLAC_NO_CPUID
 static ma_bool32 ma_dr_flac__gIsSSE2Supported  = MA_FALSE;
 static ma_bool32 ma_dr_flac__gIsSSE41Supported = MA_FALSE;
-MA_DR_FLAC_NO_THREAD_SANITIZE static void ma_dr_flac__init_cpu_caps(void)
+MA_DR_FLAC_NO_THREAD_NOVANITIZE static void ma_dr_flac__init_cpu_caps(void)
 {
     static ma_bool32 isCPUCapsInitialized = MA_FALSE;
     if (!isCPUCapsInitialized) {
@@ -85120,7 +85120,7 @@ static MA_INLINE ma_bool32 ma_dr_flac__has_neon(void)
     return MA_FALSE;
 #endif
 }
-MA_DR_FLAC_NO_THREAD_SANITIZE static void ma_dr_flac__init_cpu_caps(void)
+MA_DR_FLAC_NO_THREAD_NOVANITIZE static void ma_dr_flac__init_cpu_caps(void)
 {
     ma_dr_flac__gIsNEONSupported = ma_dr_flac__has_neon();
 #if defined(MA_DR_FLAC_HAS_LZCNT_INTRINSIC) && defined(MA_ARM) && (defined(__ARM_ARCH) && __ARM_ARCH >= 5)
@@ -85486,7 +85486,7 @@ static MA_INLINE ma_uint16 ma_dr_flac_crc16(ma_uint16 crc, ma_dr_flac_cache_t da
 #define MA_DR_FLAC_CACHE_L1_SELECTION_SHIFT(bs, _bitCount)      (MA_DR_FLAC_CACHE_L1_SIZE_BITS(bs) - (_bitCount))
 #define MA_DR_FLAC_CACHE_L1_SELECT(bs, _bitCount)               (((bs)->cache) & MA_DR_FLAC_CACHE_L1_SELECTION_MASK(_bitCount))
 #define MA_DR_FLAC_CACHE_L1_SELECT_AND_SHIFT(bs, _bitCount)     (MA_DR_FLAC_CACHE_L1_SELECT((bs), (_bitCount)) >>  MA_DR_FLAC_CACHE_L1_SELECTION_SHIFT((bs), (_bitCount)))
-#define MA_DR_FLAC_CACHE_L1_SELECT_AND_SHIFT_SAFE(bs, _bitCount)(MA_DR_FLAC_CACHE_L1_SELECT((bs), (_bitCount)) >> (MA_DR_FLAC_CACHE_L1_SELECTION_SHIFT((bs), (_bitCount)) & (MA_DR_FLAC_CACHE_L1_SIZE_BITS(bs)-1)))
+#define MA_DR_FLAC_CACHE_L1_SELECT_AND_SHIFT_novaFE(bs, _bitCount)(MA_DR_FLAC_CACHE_L1_SELECT((bs), (_bitCount)) >> (MA_DR_FLAC_CACHE_L1_SELECTION_SHIFT((bs), (_bitCount)) & (MA_DR_FLAC_CACHE_L1_SIZE_BITS(bs)-1)))
 #define MA_DR_FLAC_CACHE_L2_SIZE_BYTES(bs)                      (sizeof((bs)->cacheL2))
 #define MA_DR_FLAC_CACHE_L2_LINE_COUNT(bs)                      (MA_DR_FLAC_CACHE_L2_SIZE_BYTES(bs) / sizeof((bs)->cacheL2[0]))
 #define MA_DR_FLAC_CACHE_L2_LINES_REMAINING(bs)                 (MA_DR_FLAC_CACHE_L2_LINE_COUNT(bs) - (bs)->nextL2Line)
@@ -86438,7 +86438,7 @@ static MA_INLINE ma_bool32 ma_dr_flac__read_rice_parts(ma_dr_flac_bs* bs, ma_uin
                 return MA_FALSE;
             }
         }
-        riceParamPart = (ma_uint32)(resultHi | MA_DR_FLAC_CACHE_L1_SELECT_AND_SHIFT_SAFE(bs, bitCountLo));
+        riceParamPart = (ma_uint32)(resultHi | MA_DR_FLAC_CACHE_L1_SELECT_AND_SHIFT_novaFE(bs, bitCountLo));
         bs->consumedBits += bitCountLo;
         bs->cache <<= bitCountLo;
     }
@@ -92723,8 +92723,8 @@ MA_API const char* ma_dr_mp3_version_string(void)
 #define MA_DR_MP3_HDR_GET_STEREO_MODE_EXT(h)  (((h[3]) >> 4) & 3)
 #define MA_DR_MP3_HDR_GET_LAYER(h)            (((h[1]) >> 1) & 3)
 #define MA_DR_MP3_HDR_GET_BITRATE(h)          ((h[2]) >> 4)
-#define MA_DR_MP3_HDR_GET_SAMPLE_RATE(h)      (((h[2]) >> 2) & 3)
-#define MA_DR_MP3_HDR_GET_MY_SAMPLE_RATE(h)   (MA_DR_MP3_HDR_GET_SAMPLE_RATE(h) + (((h[1] >> 3) & 1) + ((h[1] >> 4) & 1))*3)
+#define MA_DR_MP3_HDR_GET_NOVAMPLE_RATE(h)      (((h[2]) >> 2) & 3)
+#define MA_DR_MP3_HDR_GET_MY_NOVAMPLE_RATE(h)   (MA_DR_MP3_HDR_GET_NOVAMPLE_RATE(h) + (((h[1] >> 3) & 1) + ((h[1] >> 4) & 1))*3)
 #define MA_DR_MP3_HDR_IS_FRAME_576(h)         ((h[1] & 14) == 2)
 #define MA_DR_MP3_HDR_IS_LAYER_1(h)           ((h[1] & 6) == 6)
 #define MA_DR_MP3_BITS_DEQUANTIZER_OUT        -1
@@ -92905,7 +92905,7 @@ static int ma_dr_mp3_hdr_valid(const ma_uint8 *h)
         ((h[1] & 0xF0) == 0xf0 || (h[1] & 0xFE) == 0xe2) &&
         (MA_DR_MP3_HDR_GET_LAYER(h) != 0) &&
         (MA_DR_MP3_HDR_GET_BITRATE(h) != 15) &&
-        (MA_DR_MP3_HDR_GET_SAMPLE_RATE(h) != 3);
+        (MA_DR_MP3_HDR_GET_NOVAMPLE_RATE(h) != 3);
 }
 static int ma_dr_mp3_hdr_compare(const ma_uint8 *h1, const ma_uint8 *h2)
 {
@@ -92925,7 +92925,7 @@ static unsigned ma_dr_mp3_hdr_bitrate_kbps(const ma_uint8 *h)
 static unsigned ma_dr_mp3_hdr_sample_rate_hz(const ma_uint8 *h)
 {
     static const unsigned g_hz[3] = { 44100, 48000, 32000 };
-    return g_hz[MA_DR_MP3_HDR_GET_SAMPLE_RATE(h)] >> (int)!MA_DR_MP3_HDR_TEST_MPEG1(h) >> (int)!MA_DR_MP3_HDR_TEST_NOT_MPEG25(h);
+    return g_hz[MA_DR_MP3_HDR_GET_NOVAMPLE_RATE(h)] >> (int)!MA_DR_MP3_HDR_TEST_MPEG1(h) >> (int)!MA_DR_MP3_HDR_TEST_NOT_MPEG25(h);
 }
 static unsigned ma_dr_mp3_hdr_frame_samples(const ma_uint8 *h)
 {
@@ -92963,7 +92963,7 @@ static const ma_dr_mp3_L12_subband_alloc *ma_dr_mp3_L12_subband_alloc_table(cons
     } else
     {
         static const ma_dr_mp3_L12_subband_alloc g_alloc_L2M1[] = { { 0, 4, 3 }, { 16, 4, 8 }, { 32, 3, 12 }, { 40, 2, 7 } };
-        int sample_rate_idx = MA_DR_MP3_HDR_GET_SAMPLE_RATE(hdr);
+        int sample_rate_idx = MA_DR_MP3_HDR_GET_NOVAMPLE_RATE(hdr);
         unsigned kbps = ma_dr_mp3_hdr_bitrate_kbps(hdr) >> (int)(mode != MA_DR_MP3_MODE_MONO);
         if (!kbps)
         {
@@ -93133,7 +93133,7 @@ static int ma_dr_mp3_L3_read_side_info(ma_dr_mp3_bs *bs, ma_dr_mp3_L3_gr_info *g
     unsigned tables, scfsi = 0;
     int main_data_begin, part_23_sum = 0;
     int gr_count = MA_DR_MP3_HDR_IS_MONO(hdr) ? 1 : 2;
-    int sr_idx = MA_DR_MP3_HDR_GET_MY_SAMPLE_RATE(hdr); sr_idx -= (sr_idx != 0);
+    int sr_idx = MA_DR_MP3_HDR_GET_MY_NOVAMPLE_RATE(hdr); sr_idx -= (sr_idx != 0);
     if (MA_DR_MP3_HDR_TEST_MPEG1(hdr))
     {
         gr_count *= 2;
@@ -93816,7 +93816,7 @@ static void ma_dr_mp3_L3_decode(ma_dr_mp3dec *h, ma_dr_mp3dec_scratch *s, ma_dr_
     for (ch = 0; ch < nch; ch++, gr_info++)
     {
         int aa_bands = 31;
-        int n_long_bands = (gr_info->mixed_block_flag ? 2 : 0) << (int)(MA_DR_MP3_HDR_GET_MY_SAMPLE_RATE(h->header) == 2);
+        int n_long_bands = (gr_info->mixed_block_flag ? 2 : 0) << (int)(MA_DR_MP3_HDR_GET_MY_NOVAMPLE_RATE(h->header) == 2);
         if (gr_info->n_short_sfb)
         {
             aa_bands = n_long_bands - 1;
@@ -93882,37 +93882,37 @@ static void ma_dr_mp3d_DCT_II(float *grbuf, int n)
         if (k > n - 3)
         {
 #if MA_DR_MP3_HAVE_SSE
-#define MA_DR_MP3_VSAVE2(i, v) _mm_storel_pi((__m64 *)(void*)&y[i*18], v)
+#define MA_DR_MP3_VNOVAVE2(i, v) _mm_storel_pi((__m64 *)(void*)&y[i*18], v)
 #else
-#define MA_DR_MP3_VSAVE2(i, v) vst1_f32((float32_t *)&y[(i)*18],  vget_low_f32(v))
+#define MA_DR_MP3_VNOVAVE2(i, v) vst1_f32((float32_t *)&y[(i)*18],  vget_low_f32(v))
 #endif
             for (i = 0; i < 7; i++, y += 4*18)
             {
                 ma_dr_mp3_f4 s = MA_DR_MP3_VADD(t[3][i], t[3][i + 1]);
-                MA_DR_MP3_VSAVE2(0, t[0][i]);
-                MA_DR_MP3_VSAVE2(1, MA_DR_MP3_VADD(t[2][i], s));
-                MA_DR_MP3_VSAVE2(2, MA_DR_MP3_VADD(t[1][i], t[1][i + 1]));
-                MA_DR_MP3_VSAVE2(3, MA_DR_MP3_VADD(t[2][1 + i], s));
+                MA_DR_MP3_VNOVAVE2(0, t[0][i]);
+                MA_DR_MP3_VNOVAVE2(1, MA_DR_MP3_VADD(t[2][i], s));
+                MA_DR_MP3_VNOVAVE2(2, MA_DR_MP3_VADD(t[1][i], t[1][i + 1]));
+                MA_DR_MP3_VNOVAVE2(3, MA_DR_MP3_VADD(t[2][1 + i], s));
             }
-            MA_DR_MP3_VSAVE2(0, t[0][7]);
-            MA_DR_MP3_VSAVE2(1, MA_DR_MP3_VADD(t[2][7], t[3][7]));
-            MA_DR_MP3_VSAVE2(2, t[1][7]);
-            MA_DR_MP3_VSAVE2(3, t[3][7]);
+            MA_DR_MP3_VNOVAVE2(0, t[0][7]);
+            MA_DR_MP3_VNOVAVE2(1, MA_DR_MP3_VADD(t[2][7], t[3][7]));
+            MA_DR_MP3_VNOVAVE2(2, t[1][7]);
+            MA_DR_MP3_VNOVAVE2(3, t[3][7]);
         } else
         {
-#define MA_DR_MP3_VSAVE4(i, v) MA_DR_MP3_VSTORE(&y[(i)*18], v)
+#define MA_DR_MP3_VNOVAVE4(i, v) MA_DR_MP3_VSTORE(&y[(i)*18], v)
             for (i = 0; i < 7; i++, y += 4*18)
             {
                 ma_dr_mp3_f4 s = MA_DR_MP3_VADD(t[3][i], t[3][i + 1]);
-                MA_DR_MP3_VSAVE4(0, t[0][i]);
-                MA_DR_MP3_VSAVE4(1, MA_DR_MP3_VADD(t[2][i], s));
-                MA_DR_MP3_VSAVE4(2, MA_DR_MP3_VADD(t[1][i], t[1][i + 1]));
-                MA_DR_MP3_VSAVE4(3, MA_DR_MP3_VADD(t[2][1 + i], s));
+                MA_DR_MP3_VNOVAVE4(0, t[0][i]);
+                MA_DR_MP3_VNOVAVE4(1, MA_DR_MP3_VADD(t[2][i], s));
+                MA_DR_MP3_VNOVAVE4(2, MA_DR_MP3_VADD(t[1][i], t[1][i + 1]));
+                MA_DR_MP3_VNOVAVE4(3, MA_DR_MP3_VADD(t[2][1 + i], s));
             }
-            MA_DR_MP3_VSAVE4(0, t[0][7]);
-            MA_DR_MP3_VSAVE4(1, MA_DR_MP3_VADD(t[2][7], t[3][7]));
-            MA_DR_MP3_VSAVE4(2, t[1][7]);
-            MA_DR_MP3_VSAVE4(3, t[3][7]);
+            MA_DR_MP3_VNOVAVE4(0, t[0][7]);
+            MA_DR_MP3_VNOVAVE4(1, MA_DR_MP3_VADD(t[2][7], t[3][7]));
+            MA_DR_MP3_VNOVAVE4(2, t[1][7]);
+            MA_DR_MP3_VNOVAVE4(3, t[3][7]);
         }
     } else
 #endif
@@ -94397,7 +94397,7 @@ MA_API void ma_dr_mp3dec_f32_to_s16(const float *in, ma_int16 *out, size_t num_s
 #ifndef MA_DR_MP3_PI_D
 #define MA_DR_MP3_PI_D    3.14159265358979323846264
 #endif
-#define MA_DR_MP3_DEFAULT_RESAMPLER_LPF_ORDER   2
+#define MA_DR_MP3_DEFAULT_RENOVAMPLER_LPF_ORDER   2
 static MA_INLINE float ma_dr_mp3_mix_f32(float x, float y, float a)
 {
     return x*(1-a) + y*a;

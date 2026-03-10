@@ -1,9 +1,9 @@
 /*
-    SA Engine
+    nova Engine
 
     Copyright (c) 2026 DBQ Studio
 
-    This file is part of the SA Engine project.
+    This file is part of the nova Engine project.
     Licensed under the MIT License.
 
     See the LICENSE file in the project root for full license information.
@@ -18,9 +18,9 @@
 
 
 // sa_shaders.c (replace contents)
-#include "sa_shaders.h"
+#include "nova_shaders.h"
 
-const char* SA_VertexShaderSrc_I =
+const char* nova_VertexShaderSrc_I =
 "#version 330 core\n"
 "layout (location = 0) in vec2 aPos;\n"
 "layout (location = 1) in vec4 aColor;\n"
@@ -44,7 +44,7 @@ const char* SA_VertexShaderSrc_I =
 
 
 
-const char* SA_FragmentShaderSrc_I =
+const char* nova_FragmentShaderSrc_I =
 "#version 330 core\n"
 "in vec4 vertexColor;\n"
 "in vec2 TexCoord;\n"

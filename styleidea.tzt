@@ -1,0 +1,52 @@
+int main(SA_MULTIPLE_ARGS)
+{
+
+    nova_App *CodeEditor = nova_StartApp(500, 550, "Title2", NOVA_MAXIMIZED);
+    nova_App *ExtraEditor1 = nova_StartApp(500, 550, "Title2", 0);
+
+    nova_NewApp(CodeEditor, ExtraEditor1);
+
+
+    nova_Widget* layout = SA_VBox(CodeEditor);
+
+    nova_Button(layout, "Save");
+    nova_Button(layout, "Load");
+
+
+
+    nova_Run(CodeEditor);
+}
+
+
+
+
+
+
+
+
+
+struct nova_App {
+    int x;
+    int y;
+    int width;
+    int height;
+
+    GLFWwindow *window;
+
+    struct color {
+        int r;
+        int g;
+        int b;
+    }
+
+    nova_EventCallback* callback;
+    nova_Timer* timer;
+
+    int fps;
+    int flags;
+
+
+    struct nova_App* branch;
+}
+
+

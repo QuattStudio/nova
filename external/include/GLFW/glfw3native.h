@@ -68,7 +68,7 @@ extern "C" {
  *  * `GLFW_EXPOSE_NATIVE_NSGL`
  *  * `GLFW_EXPOSE_NATIVE_GLX`
  *  * `GLFW_EXPOSE_NATIVE_EGL`
- *  * `GLFW_EXPOSE_NATIVE_OSMESA`
+ *  * `GLFW_EXPOSE_NATIVE_OSMENOVA`
  *
  *  These macros select which of the native access functions that are declared
  *  and which platform-specific headers to include.  It is then up your (by
@@ -143,7 +143,7 @@ extern "C" {
  #if defined(GLFW_EXPOSE_NATIVE_EGL)
   #include <EGL/egl.h>
  #endif
- #if defined(GLFW_EXPOSE_NATIVE_OSMESA)
+ #if defined(GLFW_EXPOSE_NATIVE_OSMENOVA)
   /* This is a workaround for the fact that glfw3.h defines GLAPIENTRY because by
    * default it also acts as an OpenGL header
    * However, osmesa.h will include gl.h, which will define it unconditionally
@@ -588,7 +588,7 @@ GLFWAPI EGLContext glfwGetEGLContext(GLFWwindow* window);
 GLFWAPI EGLSurface glfwGetEGLSurface(GLFWwindow* window);
 #endif
 
-#if defined(GLFW_EXPOSE_NATIVE_OSMESA)
+#if defined(GLFW_EXPOSE_NATIVE_OSMENOVA)
 /*! @brief Retrieves the color buffer associated with the specified window.
  *
  *  @param[in] window The window whose color buffer to retrieve.

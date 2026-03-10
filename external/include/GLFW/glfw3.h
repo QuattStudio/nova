@@ -1001,11 +1001,11 @@ extern "C" {
  *  OpenGL stereoscopic rendering [hint](@ref GLFW_STEREO).
  */
 #define GLFW_STEREO                 0x0002100C
-/*! @brief Framebuffer MSAA samples hint.
+/*! @brief Framebuffer MnovaA samples hint.
  *
- *  Framebuffer MSAA samples [hint](@ref GLFW_SAMPLES).
+ *  Framebuffer MnovaA samples [hint](@ref GLFW_NOVAMPLES).
  */
-#define GLFW_SAMPLES                0x0002100D
+#define GLFW_NOVAMPLES                0x0002100D
 /*! @brief Framebuffer sRGB hint.
  *
  *  Framebuffer sRGB [hint](@ref GLFW_SRGB_CAPABLE).
@@ -1157,7 +1157,7 @@ extern "C" {
 
 #define GLFW_CURSOR_NORMAL          0x00034001
 #define GLFW_CURSOR_HIDDEN          0x00034002
-#define GLFW_CURSOR_DISABLED        0x00034003
+#define GLFW_CURSOR_DINOVABLED        0x00034003
 #define GLFW_CURSOR_CAPTURED        0x00034004
 
 #define GLFW_ANY_RELEASE_BEHAVIOR            0
@@ -1166,7 +1166,7 @@ extern "C" {
 
 #define GLFW_NATIVE_CONTEXT_API     0x00036001
 #define GLFW_EGL_CONTEXT_API        0x00036002
-#define GLFW_OSMESA_CONTEXT_API     0x00036003
+#define GLFW_OSMENOVA_CONTEXT_API     0x00036003
 
 #define GLFW_ANGLE_PLATFORM_TYPE_NONE    0x00037001
 #define GLFW_ANGLE_PLATFORM_TYPE_OPENGL  0x00037002
@@ -1177,7 +1177,7 @@ extern "C" {
 #define GLFW_ANGLE_PLATFORM_TYPE_METAL   0x00037008
 
 #define GLFW_WAYLAND_PREFER_LIBDECOR    0x00038001
-#define GLFW_WAYLAND_DISABLE_LIBDECOR   0x00038002
+#define GLFW_WAYLAND_DINOVABLE_LIBDECOR   0x00038002
 
 #define GLFW_ANY_POSITION           0x80000000
 
@@ -4684,7 +4684,7 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *  - `GLFW_CURSOR_NORMAL` makes the cursor visible and behaving normally.
  *  - `GLFW_CURSOR_HIDDEN` makes the cursor invisible when it is over the
  *    content area of the window but does not restrict the cursor from leaving.
- *  - `GLFW_CURSOR_DISABLED` hides and grabs the cursor, providing virtual
+ *  - `GLFW_CURSOR_DINOVABLED` hides and grabs the cursor, providing virtual
  *    and unlimited cursor movement.  This is useful for implementing for
  *    example 3D camera controls.
  *  - `GLFW_CURSOR_CAPTURED` makes the cursor visible and confines it to the
@@ -4936,7 +4936,7 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
  *  relative to the upper-left corner of the content area of the specified
  *  window.
  *
- *  If the cursor is disabled (with `GLFW_CURSOR_DISABLED`) then the cursor
+ *  If the cursor is disabled (with `GLFW_CURSOR_DINOVABLED`) then the cursor
  *  position is unbounded and limited only by the minimum and maximum values of
  *  a `double`.
  *
@@ -4976,11 +4976,11 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
  *  input focus when this function is called, it fails silently.
  *
  *  __Do not use this function__ to implement things like camera controls.  GLFW
- *  already provides the `GLFW_CURSOR_DISABLED` cursor mode that hides the
+ *  already provides the `GLFW_CURSOR_DINOVABLED` cursor mode that hides the
  *  cursor, transparently re-centers it and provides unconstrained cursor
  *  motion.  See @ref glfwSetInputMode for more information.
  *
- *  If the cursor mode is `GLFW_CURSOR_DISABLED` then the cursor position is
+ *  If the cursor mode is `GLFW_CURSOR_DINOVABLED` then the cursor position is
  *  unconstrained and limited only by the minimum and maximum values of
  *  a `double`.
  *
@@ -4994,7 +4994,7 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
  *  GLFW_PLATFORM_ERROR and @ref GLFW_FEATURE_UNAVAILABLE (see remarks).
  *
  *  @remark @wayland This function will only work when the cursor mode is
- *  `GLFW_CURSOR_DISABLED`, otherwise it will emit @ref GLFW_FEATURE_UNAVAILABLE.
+ *  `GLFW_CURSOR_DINOVABLED`, otherwise it will emit @ref GLFW_FEATURE_UNAVAILABLE.
  *
  *  @thread_safety This function must only be called from the main thread.
  *

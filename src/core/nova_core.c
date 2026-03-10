@@ -1,17 +1,17 @@
 /*
-    SA Engine
+    nova Engine
 
     Copyright (c) 2026 DBQ Studio
 
-    This file is part of the SA Engine project.
+    This file is part of the nova Engine project.
     Licensed under the MIT License.
 
     See the LICENSE file in the project root for full license information.
 */
 
-#include "sa_core.h"
+#include "nova_core.h"
 #include "glh.h"
-#include "sa_inc.h"
+#include "nova_inc.h"
 
 
 
@@ -29,7 +29,7 @@
     #include <unistd.h>    // fallback usleep
 #endif
 
-void SA_Delay(int ms)
+void nova_Delay(int ms)
 {
     if (ms <= 0) return;   // ignore negative or zero
 
@@ -51,9 +51,9 @@ void SA_Delay(int ms)
 
 
 
-SA_Mesh* SA_CreateMesh_I(SA_Uint VAO, SA_Uint VBO, SA_Uint EBO)
+nova_Mesh* nova_CreateMesh_I(nova_Uint VAO, nova_Uint VBO, nova_Uint EBO)
 {
-    SA_Mesh* mesh = SA_MALLOC(SA_Mesh);
+    nova_Mesh* mesh = NOVA_MALLOC(nova_Mesh);
     if (!mesh) return NULL;
 
     mesh->VAO = VAO;
@@ -68,10 +68,10 @@ SA_Mesh* SA_CreateMesh_I(SA_Uint VAO, SA_Uint VBO, SA_Uint EBO)
 
 
 
-void SA_MeshCounterReset_I(SA_Mesh* mesh)
+void nova_MeshCounterReset_I(nova_Mesh* mesh)
 {
-    if (SA_NOT mesh) {
-        SA_LOG_WARN("Nothing provided to reset in mesh counter reset function!");
+    if (NOVA_NOT mesh) {
+        NOVA_LOG_WARN("Nothing provided to reset in mesh counter reset function!");
         return;
     }
 
@@ -83,10 +83,10 @@ void SA_MeshCounterReset_I(SA_Mesh* mesh)
 
 
 
-void SA_DestroyMesh_I(SA_Mesh* mesh)
+void nova_DestroyMesh_I(nova_Mesh* mesh)
 {
-    if (SA_NOT mesh) {
-        SA_LOG_WARN("No mesh provided for destruction!");
+    if (NOVA_NOT mesh) {
+        NOVA_LOG_WARN("No mesh provided for destruction!");
         return;
     }
 
@@ -95,7 +95,7 @@ void SA_DestroyMesh_I(SA_Mesh* mesh)
     GLH_DelBuffers(&mesh->VBO, 1);
     GLH_DelBuffers(&mesh->EBO, 1);
 
-    SA_LOG_INFO("Mesh Destroyed succesfully!");
+    NOVA_LOG_INFO("Mesh Destroyed succesfully!");
 
     free(mesh);
 
@@ -109,7 +109,7 @@ void SA_DestroyMesh_I(SA_Mesh* mesh)
 
 #ifdef _WIN32
 
-SA_Uint32 SA_GetTicks(void)
+nova_Uint32 nova_GetTicks(void)
 {
     return GetTickCount();
 }
@@ -117,7 +117,7 @@ SA_Uint32 SA_GetTicks(void)
 #else
 #include <time.h>
 
-SA_Uint32 SA_GetTicks(void)
+nova_Uint32 nova_GetTicks(void)
 {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
@@ -131,16 +131,16 @@ SA_Uint32 SA_GetTicks(void)
 
 
 
-SA_Timer* SA_StartTimer(void)
+nova_Timer* nova_StartTimer(void)
 {
-    SA_Timer* timer = SA_MALLOC(SA_Timer);
+    nova_Timer* timer = NOVA_MALLOC(nova_Timer);
     
-    if (SA_NOT timer) {
-        SA_LOG_WARN("Timer memory allocation failed!");
+    if (NOVA_NOT timer) {
+        NOVA_LOG_WARN("Timer memory allocation failed!");
         return NULL;
     }
 
-    SA_Uint32 now = SA_GetTicks();
+    nova_Uint32 now = nova_GetTicks();
     timer->time.start = now;
     timer->time.last = now;
     timer->time.current = now;
@@ -158,14 +158,14 @@ SA_Timer* SA_StartTimer(void)
 
 
 
-float SA_GetDeltaFromTimer(SA_Timer *timer)
+float nova_GetDeltaFromTimer(nova_Timer *timer)
 {
-    if (SA_NOT timer) {
-        SA_LOG_WARN("Timer not found!");
+    if (NOVA_NOT timer) {
+        NOVA_LOG_WARN("Timer not found!");
         return 0;
     }
 
-    timer->time.current = SA_GetTicks();
+    timer->time.current = nova_GetTicks();
     timer->time.delta = (timer->time.current - timer->time.last) / 1000.0f;
     timer->time.last = timer->time.current;
     if (timer->time.delta > 0.05f)  timer->time.delta = 0.05f;
@@ -175,10 +175,10 @@ float SA_GetDeltaFromTimer(SA_Timer *timer)
 
 
 
-void SA_StopTimer(SA_Timer* timer)
+void nova_StopTimer(nova_Timer* timer)
 {
-    if (SA_NOT timer) {
-        SA_LOG_INFO("Timer stop successfully!");
+    if (NOVA_NOT timer) {
+        NOVA_LOG_INFO("Timer stop successfully!");
         return;
     }
 
@@ -189,37 +189,37 @@ void SA_StopTimer(SA_Timer* timer)
 
 
 
-float SA_GetElapsed(SA_Timer* timer)
+float nova_GetElapsed(nova_Timer* timer)
 {
-    if (SA_NOT timer) {
-        SA_LOG_WARN("No timer provided in elapsed function!");
+    if (NOVA_NOT timer) {
+        NOVA_LOG_WARN("No timer provided in elapsed function!");
         return 0.0f;
     }
-    return (SA_GetTicks() - timer->time.start) / 1000.0f;
+    return (nova_GetTicks() - timer->time.start) / 1000.0f;
 }
 
 
 
-void SA_ApplyGLFWWindowHint_I(SA_Uint flags)
+void nova_ApplyGLFWWindowHint_I(nova_Uint flags)
 {
-    if (flags & SA_FLAG_WINDOW_RESIZABLE) {
-        SA_LOG_INFO("Flag type [window resizable] setted on window!");
-        glfwWindowHint(GLFW_RESIZABLE, SA_YES);
+    if (flags & NOVA_FLAG_WINDOW_RESIZABLE) {
+        NOVA_LOG_INFO("Flag type [window resizable] setted on window!");
+        glfwWindowHint(GLFW_RESIZABLE, NOVA_YES);
     }
 
-    if (flags & SA_FLAG_WINDOW_BORDERLESS) {
-        SA_LOG_INFO("Flag type [window border-less] setted on window!");
-        glfwWindowHint(GLFW_DECORATED, SA_NO);
+    if (flags & NOVA_FLAG_WINDOW_BORDERLESS) {
+        NOVA_LOG_INFO("Flag type [window border-less] setted on window!");
+        glfwWindowHint(GLFW_DECORATED, NOVA_NO);
     }
 
-    if (flags & SA_FLAG_WINDOW_MAXIMIZED) {
-        SA_LOG_INFO("Flag type [window maximized] setted on window!");
-        glfwWindowHint(GLFW_MAXIMIZED, SA_YES);
+    if (flags & NOVA_FLAG_WINDOW_MAXIMIZED) {
+        NOVA_LOG_INFO("Flag type [window maximized] setted on window!");
+        glfwWindowHint(GLFW_MAXIMIZED, NOVA_YES);
     }
 
-    if (flags & SA_FLAG_WINDOW_FULLSCREEN) {
-        SA_LOG_INFO("Flag type [window fullscreen] setted on window!");
-        // glfwWindowHint(GLFW_FULL, SA_NO);
+    if (flags & NOVA_FLAG_WINDOW_FULLSCREEN) {
+        NOVA_LOG_INFO("Flag type [window fullscreen] setted on window!");
+        // glfwWindowHint(GLFW_FULL, NOVA_NO);
     }
     
 }

@@ -1,16 +1,16 @@
-#include "sa_text.h"
+#include "nova_text.h"
 
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "stb_truetype.h"   // put stb_truetype.h in src/ or external/include/
 
-
-#include "sa_inc.h"
-#include "sa_renderer.h"
+#include "nova_.h"
+#include "nova_inc.h"
+#include "nova_renderer.h"
 
 #include "glh.h"
-#include "sa_algo.h"
+#include "nova_algo.h"
 
-#include "sa_common.h"
+#include "nova_common.h"
 
 
 
@@ -19,14 +19,14 @@
 // Text / Font support (embedded in renderer)
 // ────────────────────────────────────────────────
 
-typedef struct SA_Font {
+typedef struct nova_Font {
     stbtt_fontinfo     info;
     GLuint             texID;
     int                atlasW, atlasH;
     stbtt_packedchar   chardata[128];     // 32..126 + some margin
     float              size;
     float              ascent, descent, linegap;
-} SA_Font;
+} nova_Font;
 
 
 
@@ -36,7 +36,7 @@ typedef struct SA_Font {
 
 
 
-SA_Font *SA_DefaultFont_I = NULL;
+nova_Font *nova_DefaultFont_I = NULL;
 
 
 
@@ -55,19 +55,19 @@ SA_Font *SA_DefaultFont_I = NULL;
 
 
 
-SA_Font* SA_LoadFont(const char* ttf_path, float pixel_size)
+nova_Font* nova_LoadFont(const char* ttf_path, float pixel_size)
 {
-    SA_Font* f = calloc(1, sizeof(SA_Font));
+    nova_Font* f = calloc(1, sizeof(nova_Font));
     
-    if (SA_NOT f) {
-        SA_LOG_WARN("allocation failed while creating a font!");
+    if (NOVA_NOT f) {
+        NOVA_LOG_WARN("allocation failed while creating a font!");
         return NULL;
     }
 
 
     FILE* fp = fopen(ttf_path, "rb");
-    if (SA_NOT fp) {
-        SA_LOG_WARN("Failed to access ttf file of path [%s]", ttf_path); 
+    if (NOVA_NOT fp) {
+        NOVA_LOG_WARN("Failed to access ttf file of path [%s]", ttf_path); 
         free(f); 
         return NULL; 
     }
@@ -82,8 +82,8 @@ SA_Font* SA_LoadFont(const char* ttf_path, float pixel_size)
     fread(buf, 1, sz, fp);
     fclose(fp);
 
-    if (SA_NOT stbtt_InitFont(&f->info, buf, 0)) {
-        SA_LOG_WARN("Font Init Failed! Font path: %s", ttf_path);
+    if (NOVA_NOT stbtt_InitFont(&f->info, buf, 0)) {
+        NOVA_LOG_WARN("Font Init Failed! Font path: %s", ttf_path);
         free(buf); 
         free(f); 
         return NULL;
@@ -102,7 +102,7 @@ SA_Font* SA_LoadFont(const char* ttf_path, float pixel_size)
     // Atlas
     f->atlasW = 512;
     f->atlasH = 512;
-    SA_Uint8* alpha_map = calloc(f->atlasW * f->atlasH, 1);
+    nova_Uint8* alpha_map = calloc(f->atlasW * f->atlasH, 1);
 
     stbtt_pack_context pc;
     stbtt_PackBegin(&pc, alpha_map, f->atlasW, f->atlasH, 0, 1, NULL);
@@ -111,7 +111,7 @@ SA_Font* SA_LoadFont(const char* ttf_path, float pixel_size)
     stbtt_PackEnd(&pc);
 
     // Make RGBA white + alpha (so original shader tex * vertexColor works perfectly)
-    SA_Uint8* rgba = malloc(f->atlasW * f->atlasH * 4);
+    nova_Uint8* rgba = malloc(f->atlasW * f->atlasH * 4);
     for (int i = 0; i < f->atlasW * f->atlasH; i++) {
         rgba[i*4 + 0] = 255;
         rgba[i*4 + 1] = 255;
@@ -131,8 +131,8 @@ SA_Font* SA_LoadFont(const char* ttf_path, float pixel_size)
     free(alpha_map);
     free(rgba);
 
-    SA_LOG_INFO("Font loaded → texID = %u, size=%.1f", f->texID, pixel_size);
-    SA_LOG_INFO("Atlas uploaded, bound tex now %u", CurrentBoundTexture);
+    NOVA_LOG_INFO("Font loaded → texID = %u, size=%.1f", f->texID, pixel_size);
+    NOVA_LOG_INFO("Atlas uploaded, bound tex now %u", CurrentBoundTexture);
 
     return f;
 }
@@ -144,14 +144,14 @@ SA_Font* SA_LoadFont(const char* ttf_path, float pixel_size)
 
 
 
-void SA_SetDefaultFont(SA_Font* font)
+void nova_SetDefaultFont(nova_Font* font)
 {
-    if (SA_NOT font) {
-        SA_LOG_WARN("No Font provided for default!");
+    if (NOVA_NOT font) {
+        NOVA_LOG_WARN("No Font provided for default!");
         return;
     }
 
-    SA_DefaultFont_I = font;
+    nova_DefaultFont_I = font;
 }
 
 
@@ -167,16 +167,16 @@ void SA_SetDefaultFont(SA_Font* font)
 
 
 
-void SA_DrawText(const char* str, float x, float y, SA_Colori color)
+void nova_DrawText(nova_App* app, const char* str, float x, float y, nova_Colori color)
 {
-    SA_Font* font = SA_DefaultFont_I;
+    nova_Font* font = nova_DefaultFont_I;
 
     if (!font || !str || !*str) return;
 
     if (CurrentBoundTexture != font->texID) {
-        SA_FlushBatch();
-        GlobalMesh->VertexCount = 0;
-        GlobalMesh->IndexCount  = 0;
+        nova_FlushBatch(app);
+        app->mesh->VertexCount = 0;
+        app->mesh->IndexCount  = 0;
         CurrentBoundTexture = font->texID;
     }
 
@@ -185,7 +185,7 @@ void SA_DrawText(const char* str, float x, float y, SA_Colori color)
     float cx = x;
     float cy = y + font->ascent;
 
-    SA_Color fc = SA_NormalizeColorEx(color);
+    nova_Color fc = nova_NormalizeColorEx(color);
 
     while (*str) {
         int ch = (unsigned char)*str++;
@@ -199,24 +199,24 @@ void SA_DrawText(const char* str, float x, float y, SA_Colori color)
                             ch, &cx, &cy, &q, 1);   // 1 = use align (baseline)
 
         // Push quad (using your existing helpers)
-        size_t base = GlobalMesh->VertexCount;
+        size_t base = app->mesh->VertexCount;
 
-        SA_PushVertexUV(q.x0, q.y0, fc, q.s0, q.t0);
-        SA_PushVertexUV(q.x1, q.y0, fc, q.s1, q.t0);
-        SA_PushVertexUV(q.x0, q.y1, fc, q.s0, q.t1);
-        SA_PushVertexUV(q.x1, q.y1, fc, q.s1, q.t1);
+        nova_PushVertexUV(app, q.x0, q.y0, fc, q.s0, q.t0);
+        nova_PushVertexUV(app, q.x1, q.y0, fc, q.s1, q.t0);
+        nova_PushVertexUV(app, q.x0, q.y1, fc, q.s0, q.t1);
+        nova_PushVertexUV(app, q.x1, q.y1, fc, q.s1, q.t1);
 
-        SA_PushIndex(base+0); SA_PushIndex(base+1); SA_PushIndex(base+2);
-        SA_PushIndex(base+1); SA_PushIndex(base+3); SA_PushIndex(base+2);
+        nova_PushIndex(app, base+0); nova_PushIndex(app, base+1); nova_PushIndex(app, base+2);
+        nova_PushIndex(app, base+1); nova_PushIndex(app, base+3); nova_PushIndex(app, base+2);
 
-        if (GlobalMesh->VertexCount >= SA_MAX_VERTICES - 4) {
-            SA_FlushBatch();
-            GlobalMesh->VertexCount = 0;
-            GlobalMesh->IndexCount  = 0;
+        if (app->mesh->VertexCount >= NOVA_MAX_VERTICES - 4) {
+            nova_FlushBatch(app);
+            app->mesh->VertexCount = 0;
+            app->mesh->IndexCount  = 0;
         }
     }
 
-    SA_FlushBatch();  // force draw text this frame
+    nova_FlushBatch(app);  // force draw text this frame
 }
 
 
@@ -227,14 +227,14 @@ void SA_DrawText(const char* str, float x, float y, SA_Colori color)
 
 
 
-void SA_DrawTextEx(SA_Font* font, const char* str, float x, float y, SA_Colori color)
+void nova_DrawTextEx(nova_App* app, nova_Font* font, const char* str, float x, float y, nova_Colori color)
 {
     if (!font || !str || !*str) return;
 
     if (CurrentBoundTexture != font->texID) {
-        SA_FlushBatch();
-        GlobalMesh->VertexCount = 0;
-        GlobalMesh->IndexCount  = 0;
+        nova_FlushBatch(app);
+        app->mesh->VertexCount = 0;
+        app->mesh->IndexCount  = 0;
         CurrentBoundTexture = font->texID;
     }
 
@@ -243,7 +243,7 @@ void SA_DrawTextEx(SA_Font* font, const char* str, float x, float y, SA_Colori c
     float cx = x;
     float cy = y + font->ascent;
 
-    SA_Color fc = SA_NormalizeColorEx(color);
+    nova_Color fc = nova_NormalizeColorEx(color);
 
     while (*str) {
         int ch = (unsigned char)*str++;
@@ -257,24 +257,24 @@ void SA_DrawTextEx(SA_Font* font, const char* str, float x, float y, SA_Colori c
                             ch, &cx, &cy, &q, 1);   // 1 = use align (baseline)
 
         // Push quad (using your existing helpers)
-        size_t base = GlobalMesh->VertexCount;
+        size_t base = app->mesh->VertexCount;
 
-        SA_PushVertexUV(q.x0, q.y0, fc, q.s0, q.t0);
-        SA_PushVertexUV(q.x1, q.y0, fc, q.s1, q.t0);
-        SA_PushVertexUV(q.x0, q.y1, fc, q.s0, q.t1);
-        SA_PushVertexUV(q.x1, q.y1, fc, q.s1, q.t1);
+        nova_PushVertexUV(app, q.x0, q.y0, fc, q.s0, q.t0);
+        nova_PushVertexUV(app, q.x1, q.y0, fc, q.s1, q.t0);
+        nova_PushVertexUV(app, q.x0, q.y1, fc, q.s0, q.t1);
+        nova_PushVertexUV(app, q.x1, q.y1, fc, q.s1, q.t1);
 
-        SA_PushIndex(base+0); SA_PushIndex(base+1); SA_PushIndex(base+2);
-        SA_PushIndex(base+1); SA_PushIndex(base+3); SA_PushIndex(base+2);
+        nova_PushIndex(app, base+0); nova_PushIndex(app, base+1); nova_PushIndex(app, base+2);
+        nova_PushIndex(app, base+1); nova_PushIndex(app, base+3); nova_PushIndex(app, base+2);
 
-        if (GlobalMesh->VertexCount >= SA_MAX_VERTICES - 4) {
-            SA_FlushBatch();
-            GlobalMesh->VertexCount = 0;
-            GlobalMesh->IndexCount  = 0;
+        if (app->mesh->VertexCount >= NOVA_MAX_VERTICES - 4) {
+            nova_FlushBatch(app);
+            app->mesh->VertexCount = 0;
+            app->mesh->IndexCount  = 0;
         }
     }
 
-    SA_FlushBatch();  // force draw text this frame
+    nova_FlushBatch(app);  // force draw text this frame
 }
 
 
@@ -284,10 +284,10 @@ void SA_DrawTextEx(SA_Font* font, const char* str, float x, float y, SA_Colori c
 
 
 
-void SA_UnLoadFont(SA_Font* font)
+void nova_UnLoadFont(nova_Font* font)
 {
-    if (SA_NOT font) {
-        SA_LOG_INFO("No font provide to UnLoad!");
+    if (NOVA_NOT font) {
+        NOVA_LOG_INFO("No font provide to UnLoad!");
         return;
     }
 
@@ -296,5 +296,5 @@ void SA_UnLoadFont(SA_Font* font)
     free(font);
     font = NULL;
 
-    SA_LOG_INFO("Font UnLoaded Successfully!");
+    NOVA_LOG_INFO("Font UnLoaded Successfully!");
 }

@@ -89,7 +89,7 @@
 //
 //   See end of file for license information.
 //
-// USAGE
+// UNOVAGE
 //
 //   Include this file in whatever places need to refer to it. In ONE C/C++
 //   file, write:
@@ -191,7 +191,7 @@
 //         for non-commercial fonts, thus making fonts scaled in points
 //         according to the TrueType spec incoherently sized in practice.
 //
-// DETAILED USAGE:
+// DETAILED UNOVAGE:
 //
 //  Scale:
 //    Select how high you want the font to be, in points or pixels.
@@ -224,7 +224,7 @@
 //    Call GlyphHMetrics, and compute 'current_point += SF * advance'.
 //
 //
-// ADVANCED USAGE
+// ADVANCED UNOVAGE
 //
 //   Quality:
 //
@@ -269,7 +269,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 ////
-////  SAMPLE PROGRAMS
+////  NOVAMPLE PROGRAMS
 ////
 //
 //  Incomplete text-in-3d-api example, which draws quads properly aligned to be lossless.
@@ -1105,15 +1105,15 @@ enum { // languageID for STBTT_PLATFORM_ID_MAC
 
 #ifdef STB_TRUETYPE_IMPLEMENTATION
 
-#ifndef STBTT_MAX_OVERSAMPLE
-#define STBTT_MAX_OVERSAMPLE   8
+#ifndef STBTT_MAX_OVERNOVAMPLE
+#define STBTT_MAX_OVERNOVAMPLE   8
 #endif
 
-#if STBTT_MAX_OVERSAMPLE > 255
-#error "STBTT_MAX_OVERSAMPLE cannot be > 255"
+#if STBTT_MAX_OVERNOVAMPLE > 255
+#error "STBTT_MAX_OVERNOVAMPLE cannot be > 255"
 #endif
 
-typedef int stbtt__test_oversample_pow2[(STBTT_MAX_OVERSAMPLE & (STBTT_MAX_OVERSAMPLE-1)) == 0 ? 1 : -1];
+typedef int stbtt__test_oversample_pow2[(STBTT_MAX_OVERNOVAMPLE & (STBTT_MAX_OVERNOVAMPLE-1)) == 0 ? 1 : -1];
 
 #ifndef STBTT_RASTERIZER_VERSION
 #define STBTT_RASTERIZER_VERSION 2
@@ -3994,11 +3994,11 @@ STBTT_DEF void stbtt_PackEnd  (stbtt_pack_context *spc)
 
 STBTT_DEF void stbtt_PackSetOversampling(stbtt_pack_context *spc, unsigned int h_oversample, unsigned int v_oversample)
 {
-   STBTT_assert(h_oversample <= STBTT_MAX_OVERSAMPLE);
-   STBTT_assert(v_oversample <= STBTT_MAX_OVERSAMPLE);
-   if (h_oversample <= STBTT_MAX_OVERSAMPLE)
+   STBTT_assert(h_oversample <= STBTT_MAX_OVERNOVAMPLE);
+   STBTT_assert(v_oversample <= STBTT_MAX_OVERNOVAMPLE);
+   if (h_oversample <= STBTT_MAX_OVERNOVAMPLE)
       spc->h_oversample = h_oversample;
-   if (v_oversample <= STBTT_MAX_OVERSAMPLE)
+   if (v_oversample <= STBTT_MAX_OVERNOVAMPLE)
       spc->v_oversample = v_oversample;
 }
 
@@ -4007,14 +4007,14 @@ STBTT_DEF void stbtt_PackSetSkipMissingCodepoints(stbtt_pack_context *spc, int s
    spc->skip_missing = skip;
 }
 
-#define STBTT__OVER_MASK  (STBTT_MAX_OVERSAMPLE-1)
+#define STBTT__OVER_MASK  (STBTT_MAX_OVERNOVAMPLE-1)
 
 static void stbtt__h_prefilter(unsigned char *pixels, int w, int h, int stride_in_bytes, unsigned int kernel_width)
 {
-   unsigned char buffer[STBTT_MAX_OVERSAMPLE];
+   unsigned char buffer[STBTT_MAX_OVERNOVAMPLE];
    int safe_w = w - kernel_width;
    int j;
-   STBTT_memset(buffer, 0, STBTT_MAX_OVERSAMPLE); // suppress bogus warning from VS2013 -analyze
+   STBTT_memset(buffer, 0, STBTT_MAX_OVERNOVAMPLE); // suppress bogus warning from VS2013 -analyze
    for (j=0; j < h; ++j) {
       int i;
       unsigned int total;
@@ -4073,10 +4073,10 @@ static void stbtt__h_prefilter(unsigned char *pixels, int w, int h, int stride_i
 
 static void stbtt__v_prefilter(unsigned char *pixels, int w, int h, int stride_in_bytes, unsigned int kernel_width)
 {
-   unsigned char buffer[STBTT_MAX_OVERSAMPLE];
+   unsigned char buffer[STBTT_MAX_OVERNOVAMPLE];
    int safe_h = h - kernel_width;
    int j;
-   STBTT_memset(buffer, 0, STBTT_MAX_OVERSAMPLE); // suppress bogus warning from VS2013 -analyze
+   STBTT_memset(buffer, 0, STBTT_MAX_OVERNOVAMPLE); // suppress bogus warning from VS2013 -analyze
    for (j=0; j < w; ++j) {
       int i;
       unsigned int total;

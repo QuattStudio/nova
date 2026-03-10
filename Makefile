@@ -1,5 +1,5 @@
 CC = gcc
-NAME = SageAura
+NAME = Nova
 
 # Flags
 CFLAGS = -Iexternal/include \
@@ -7,9 +7,10 @@ CFLAGS = -Iexternal/include \
          -Isrc \
          -Iinclude/internals \
          -Iinclude/renderer \
-         -Iinclude/core
+         -Iinclude/core \
+         -Iinclude/widgets
          
-DEFINES = -DSA_BUILD -DGLFW_STATIC
+DEFINES = -DNOVA_BUILD -DGLFW_STATIC
 
 # Source files - recurse into subfolders automatically
 SRC = $(wildcard src/*.c) $(wildcard src/**/*.c)
